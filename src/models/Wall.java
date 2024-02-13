@@ -24,7 +24,7 @@ public class Wall {
         this.angle = (float) Math.atan2((y2 - y1), (x2 - x1));
     }
 
-    public boolean bounce(int x, int y){
+    public boolean hasCollided(int x, int y){
         float d1 = (float) (Math.sqrt(Math.pow(x1 - x, 2) + (Math.pow(y1 - y, 2))));      // A to C
 
         float d2 = (float) (Math.sqrt(Math.pow(x2 - x, 2) + (Math.pow(y2 - y, 2))));      // B to C

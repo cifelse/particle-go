@@ -1,10 +1,9 @@
-package models;
+package views;
 
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 
-import views.ControlPanel;
-import views.SimPanel;
+import models.Resources;
 
 import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
@@ -15,11 +14,22 @@ public class Window extends JFrame {
     // Window Title
     private final static String TITLE = "Particle Simulator";
 
+    // Window Size
+    private final static int WIDTH = 1480;
+
+    private final static int HEIGHT = 720;
+
     // Resources
     private final Resources resources;
 
     // Executor
     private final ExecutorService executor;
+
+    // The Screen where the Simulation runs
+    private SimPanel simPanel;
+
+    // The Control Panel
+    private ControlPanel controlPanel;
 
     public Window(ExecutorService executor, Resources resources) {
         // Set the title of the window
@@ -35,7 +45,7 @@ public class Window extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // Set the size of the window
-        setSize(1480, 720);
+        setSize(Window.WIDTH, Window.HEIGHT);
 
         // Set the window to be not resizable
         setResizable(false);
@@ -47,10 +57,10 @@ public class Window extends JFrame {
         setVisible(true);
 
         // Create the Sim Panel
-        SimPanel simPanel = new SimPanel(executor, resources);
+        simPanel = new SimPanel(executor, resources);
         
         // Create the Control Panel
-        ControlPanel controlPanel = new ControlPanel(executor, resources, simPanel);
+        controlPanel = new ControlPanel(executor, resources, simPanel);
 
         // Create the a Split Pane for the Sim Panel and Control Panel
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);

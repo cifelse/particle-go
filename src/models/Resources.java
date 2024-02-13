@@ -7,8 +7,8 @@ public class Resources {
     private final CopyOnWriteArrayList<Wall> walls;
 
     public Resources() {
-        particles = new CopyOnWriteArrayList<>();
-        walls = new CopyOnWriteArrayList<>();
+        particles = new CopyOnWriteArrayList<Particle>();
+        walls = new CopyOnWriteArrayList<Wall>();
     }
 
     public CopyOnWriteArrayList<Particle> getParticles() {
@@ -24,7 +24,7 @@ public class Resources {
     }
 
     public void addWall(Wall wall){
-        if(!walls.contains(wall)) {
+        if (!walls.contains(wall)) {
             this.walls.add(wall);
         }
     }
