@@ -57,7 +57,7 @@ public class AddWallPanel extends Panel {
             addButton("Add Wall", new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    resources.addWall(new Wall(x1.getText(), x2.getText(), y1.getText(), y2.getText()));
+                    resources.addWall(new Wall(x1.getText(), y1.getText(), x2.getText(), y2.getText()));
                 }
             });
 

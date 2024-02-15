@@ -4,7 +4,7 @@ import java.util.concurrent.Executors;
 import javax.swing.SwingUtilities;
 
 import models.Resources;
-import models.Simulator;
+import views.Window;
 
 public class Main {
     // Max Threads
@@ -19,7 +19,7 @@ public class Main {
             Resources resources = new Resources();
             
             // Build the Body
-            new Simulator(executor, resources);
+            new Window(executor, resources);
         });
     }
 }

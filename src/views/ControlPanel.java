@@ -2,7 +2,7 @@ package views;
 
 import java.awt.BorderLayout;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,7 +23,7 @@ public class ControlPanel extends JPanel {
      * @param executor The executor to be used.
      * @param resources The resources to be used.
      */
-    public ControlPanel(Executor executor, Resources resources) {
+    public ControlPanel(ExecutorService executor, Resources resources) {
         // Set the Layout of the panel
         setLayout(new BorderLayout());
 
@@ -31,7 +31,7 @@ public class ControlPanel extends JPanel {
         add(fps, BorderLayout.NORTH);
 
         // Add the Add Particle Panel
-        add(new AddParticlePanel(resources), BorderLayout.CENTER);
+        add(new AddParticlePanel(executor, resources), BorderLayout.CENTER);
 
         // Add the Add Wall Panel
         add(new AddWallPanel(resources), BorderLayout.SOUTH);

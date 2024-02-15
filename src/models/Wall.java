@@ -13,11 +13,11 @@ public class Wall {
     /**
      * Constructor for Wall
      * @param x1 - x coordinate of the first point
-     * @param x2 - x coordinate of the second point
      * @param y1 - y coordinate of the first point
+     * @param x2 - x coordinate of the second point
      * @param y2 - y coordinate of the second point
      */
-    public Wall(String x1, String x2, String y1, String y2) {
+    public Wall(String x1, String y1, String x2, String y2) {
         this.x1 = Integer.parseInt(x1);
         this.x2 = Integer.parseInt(x2);
         this.y1 = Integer.parseInt(y1);

@@ -1,13 +1,13 @@
 package views;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
 import javax.swing.JPanel;
@@ -22,7 +22,7 @@ import models.Wall;
  */
 public class SimPanel extends JPanel implements ActionListener  {
     // SimPanel Screen Size
-    public final static int WIDTH = 1200;
+    public final static int WIDTH = 1280;
     public final static int HEIGHT = 720;
     public final static int FRAME_RATE = 15;
     
@@ -37,18 +37,22 @@ public class SimPanel extends JPanel implements ActionListener  {
     private int frameCount;
     private Timer timer, fps;
 
-    public SimPanel(Executor executor, Resources resources, ControlPanel controlPanel) {
+    public SimPanel(ExecutorService executor, Resources resources, ControlPanel controlPanel) {
         // Set The Walls and Particles
         this.walls = resources.getWalls();
         this.particles = resources.getParticles();
 
         // Set the Executor
-        this.executor = (ExecutorService) executor;
+        this.executor = executor;
 
         // Set the size of the panel
         setBackground(Color.BLACK);
 
-        // Set the Frame Count
+        // Set the preferred size of the panel
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setMinimumSize(new Dimension(WIDTH, HEIGHT));
+
+        // Set the Initial Frame Count
         frameCount = 0;
 
         // Set the Timer
@@ -70,17 +74,18 @@ public class SimPanel extends JPanel implements ActionListener  {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.WHITE);
-
-        synchronized (particles) {
-            for (Particle p : particles){
+        if (g instanceof Graphics2D) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setColor(Color.WHITE);
+    
+            for (Particle p : particles) {
                 g2d.drawOval(p.getX(), p.getY(), Particle.DIAMETER, Particle.DIAMETER);
-            }
-        }
 
-        synchronized (walls) {
-            for (Wall w : walls){
+                // System.out.printf("Particle Speed: %f\n", p.getSpeed());
+            }
+            
+            // System.out.println("\n\n");
+            for (Wall w : walls) {
                 g2d.drawLine(w.getX1(), w.getY1(), w.getX2(), w.getY2());
             }
         }
@@ -96,11 +101,12 @@ public class SimPanel extends JPanel implements ActionListener  {
                     int dia = Particle.DIAMETER;
 
                     // Check if particle hits walls of the SimPanel
-                    if (particle.getX() >= WIDTH - dia / 2 || particle.getX() <= dia / 2) {
-                        particle.setVelocityX(-1 * particle.getVelocityX());
+                    if (particle.getX() - dia / 2 <= 0 || particle.getX() + dia / 2 >= (SimPanel.WIDTH - dia)) {
+                        particle.setVelocityX(-particle.getVelocityX());
                     }
-                    else if (particle.getY() >= HEIGHT - dia / 2 || particle.getY() <= dia / 2) {
-                        particle.setVelocityY(-1 * particle.getVelocityY());
+                    
+                    if (particle.getY() - dia / 2 <= 0 || particle.getY() + dia / 2 >= (SimPanel.HEIGHT - (dia * 7))) {
+                        particle.setVelocityY(-particle.getVelocityY());
                     }
 
                     // Check if particle hits walls

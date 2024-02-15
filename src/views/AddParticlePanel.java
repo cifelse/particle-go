@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutorService;
 
 import javax.swing.JComboBox;
 
@@ -11,27 +12,40 @@ import models.Particle;
 import models.Resources;
 
 public class AddParticlePanel extends Panel {
-
+    // The Title of the Panel
     private static final String PANEL_TITLE = "Add Particles";
 
+    // The Default Form
     private static final int DEFAULT_FORM = 1;
 
+    // The interval for spawning the particles
+    private static final int INTERVAL = 100;
+
+    // The Dropdown Menu for the Forms
     private final JComboBox<String> forms = new JComboBox<>(new String[] {"Form 1", "Form 2", "Form 3"});
 
+    // Set the Form to Default
     private int form = DEFAULT_FORM;
 
-    private InputField x, y, count, speed, angle, start, end;
+    // The Input Fields
+    private InputField x, y, count, speed, angle, start, start2, end, end2;
 
     private Resources resources;
 
+    private ExecutorService executor;
+
+    // The Panel for the Batch Addition (Form 1, 2, 3)
     private Panel addBatchPanel;
     
-    public AddParticlePanel(Resources resources) {
+    public AddParticlePanel(ExecutorService executor, Resources resources) {
         // Call the Panel constructor
         super(PANEL_TITLE, new BorderLayout()); 
         
         // Set the Resources
         this.resources = resources;
+
+        // Set the Executor
+        this.executor = executor;
 
         /**
          * First Portion of the Add Particles Panel is the
@@ -52,10 +66,19 @@ public class AddParticlePanel extends Panel {
         forms.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Remove the Batch Panel
                 remove(addBatchPanel);
+
+                // Set the Form
                 form = forms.getSelectedIndex() + 1;
+
+                // Create the new Batch Panel according to the Form
                 addBatchPanel = new AddBatchPanel(form);
+
+                // Add the Batch Panel
                 add(addBatchPanel, BorderLayout.CENTER);
+
+                // Revalidate and Repaint the Panel
                 revalidate();
                 repaint();
             }
@@ -101,7 +124,16 @@ public class AddParticlePanel extends Panel {
                 addButton("Add Particles", new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        resources.addParticle(new Particle(x.getText(), y.getText(), speed.getText(), angle.getText()));
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    resources.addParticle(new Particle(x.getText(), y.getText(), speed.getText(), angle.getText()));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
                     }
                 });
         
@@ -133,24 +165,22 @@ public class AddParticlePanel extends Panel {
             // Set the Labels
             String firstLabel, endLabel;
 
+            // Add the Form Input Panel
             switch (form) {
                 case 2:
                     firstLabel = "Start Θ";
                     endLabel = "End Θ";
+                    add(new FormInputPanel(firstLabel, endLabel), BorderLayout.CENTER);   
                     break;
                 case 3:
-                    
                     firstLabel = "Start Velocity";
                     endLabel = "End Velocity";
+                    add(new FormInputPanel(firstLabel, endLabel), BorderLayout.CENTER);   
                     break;
                 default: 
-                    firstLabel = "Start Point";
-                    endLabel = "End Point";
+                    add(new FormInputPanel(), BorderLayout.CENTER);   
                     break;
             }
-
-            // Add the Form Input Panel
-            add(new FormInputPanel(firstLabel, endLabel), BorderLayout.CENTER);   
             
             // Add the Form Button Panel
             add(new FormButtonPanel(), BorderLayout.SOUTH);
@@ -166,6 +196,36 @@ public class AddParticlePanel extends Panel {
 
                 end = addInputBar(endLabel, 10);
             }
+
+            public FormInputPanel() {
+                super(new BorderLayout());
+
+                add(new SpecialFormInputA(), BorderLayout.NORTH);
+
+                add(new SpecialFormInputB(), BorderLayout.SOUTH);
+            }
+
+            private class SpecialFormInputA extends Panel {
+                public SpecialFormInputA() {
+                    super(new GridLayout(1, 2, 0, 5));
+
+                    count = addInputBar("Count (N)", 10);
+                }
+            }
+
+            private class SpecialFormInputB extends Panel {
+                public SpecialFormInputB() {
+                    super(new GridLayout(2, 4, 0, 5));
+
+                    start = addInputBar("<html>X<sub>1</sub</html>", 5);
+
+                    start2 = addInputBar("<html>Y<sub>1</sub</html>", 5);
+
+                    end = addInputBar("<html>X<sub>2</sub</html>", 5);
+
+                    end2 = addInputBar("<html>Y<sub>2</sub</html>", 5);
+                }
+            }
         }
 
         /**
@@ -178,27 +238,66 @@ public class AddParticlePanel extends Panel {
                 addButton("Add Particles in Batches", new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        int start = Integer.parseInt(AddParticlePanel.this.start.getText());
-                        int end = Integer.parseInt(AddParticlePanel.this.end.getText());
-                        int count = Integer.parseInt(AddParticlePanel.this.count.getText());
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    float start = Float.parseFloat(AddParticlePanel.this.start.getText());
+                                    float end = Float.parseFloat(AddParticlePanel.this.end.getText());
+                                    int count = Integer.parseInt(AddParticlePanel.this.count.getText());
 
-                        switch (form) {
-                            case 2:
-                                for (int i = count; 0 < count; i--) {
-                                    resources.addParticle(new Particle(x.getText(), y.getText(), speed.getText(), String.valueOf(i)));
+                                    // Get the Final Values to avoid the final modifier
+                                    int finalX = Integer.parseInt(x.getText());
+                                    int finalY = Integer.parseInt(y.getText());
+                                    float finalSpeed = Float.parseFloat(speed.getText());
+                                    float finalAngle = Float.parseFloat(angle.getText());
+
+                                    switch (form) {
+                                        // Add the Special Form 2
+                                        case 2:
+                                            for (int i = count; i > 0; i--) {
+                                                synchronized(resources) {
+                                                    resources.addParticle(new Particle(finalX, finalY, finalSpeed, finalAngle));
+                                                    Thread.sleep(INTERVAL);
+                                                }
+                                            }
+                                            break;
+                                        
+                                        // Add the Special Form 3
+                                        case 3:
+                                            float step = (end - start) / (count - 1);
+                                            float currentSpeed = start;
+                                            
+                                            for (int i = 0; i < count; i++) {
+                                                synchronized(resources) {
+                                                    resources.addParticle(new Particle(finalX, finalY, currentSpeed, finalAngle));
+                                                    currentSpeed += step;
+                                                    Thread.sleep(INTERVAL);
+                                                }
+                                            }
+                                            break;
+
+                                        // Add the Special Form 1 or the Default Form 
+                                        default:
+                                            int x1 = Integer.parseInt(AddParticlePanel.this.start.getText());
+                                            int y1 = Integer.parseInt(AddParticlePanel.this.end.getText());
+
+                                            int x2 = Integer.parseInt(AddParticlePanel.this.start2.getText());
+                                            int y2 = Integer.parseInt(AddParticlePanel.this.end2.getText());
+
+                                            for (int i = count; i > 0; i--) {
+                                                synchronized(resources) {
+                                                    resources.addParticle(new Particle(finalX, finalY, finalSpeed, finalAngle));
+                                                    Thread.sleep(INTERVAL);
+                                                }
+                                            }
+                                            break;
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                                return;
-                            case 3:
-                                for (int i = count; 0 < count; i--) {
-                                    resources.addParticle(new Particle(x.getText(), y.getText(), String.valueOf(i), angle.getText()));
-                                }
-                                return;
-                            default:
-                                for (int i = count; 0 < count; i--) {
-                                    resources.addParticle(new Particle(x.getText(), y.getText(), String.valueOf(i), angle.getText()));
-                                }
-                                break;
-                        }
+                            }
+                        });
                     }
                 });
             }

@@ -9,6 +9,8 @@ import java.awt.event.WindowEvent;
 
 import java.util.concurrent.ExecutorService;
 
+import models.Resources;
+
 /**
  * The Window class is a JFrame that is used to display the simulation and control panels.
  */
@@ -17,7 +19,7 @@ public class Window extends JFrame {
     public final static String TITLE = "Particle Simulator";
 
     // Window Size
-    public final static int WIDTH = 1480;
+    public final static int WIDTH = 1530;
 
     public final static int HEIGHT = 720;
 
@@ -25,7 +27,7 @@ public class Window extends JFrame {
      * The Window constructor is used to create a new Window.
      * @param executor - The executor to be used.
      */
-    public Window(ExecutorService executor) {
+    public Window(ExecutorService executor, Resources resources) {
         // Set the title of the window
         super(TITLE);
 
@@ -53,20 +55,18 @@ public class Window extends JFrame {
                 System.gc();
             }
         });
-    }
 
-    /**
-     * The setPanels method is used to set the panels of the window.
-     * @param simPanel - The simulation panel
-     * @param controlPanel - The control panel
-     */
-    public void setPanels(SimPanel simPanel, ControlPanel controlPanel) {
         // Create the a Split Pane for the Sim Panel and Control Panel
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerSize(1);
         splitPane.setDividerLocation(SimPanel.WIDTH);
-        splitPane.add(simPanel);
-        splitPane.add(controlPanel);
+
+        // Create the Control Panel
+        ControlPanel controlPanel = new ControlPanel(executor, resources);
+        splitPane.add(controlPanel, JSplitPane.RIGHT);
+
+        // Create the Sim Panel
+        SimPanel simPanel = new SimPanel(executor, resources, controlPanel);
+        splitPane.add(simPanel, JSplitPane.LEFT);
 
         // Add the split pane to the window
         setContentPane(splitPane);
