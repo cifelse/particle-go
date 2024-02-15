@@ -24,7 +24,7 @@ public class AddParticlePanel extends Panel {
 
     private Resources resources;
 
-    private Panel formPanel;
+    private Panel addBatchPanel;
     
     public AddParticlePanel(Resources resources) {
         // Call the Panel constructor
@@ -33,21 +33,29 @@ public class AddParticlePanel extends Panel {
         // Set the Resources
         this.resources = resources;
 
-        add(new InputPanel(), BorderLayout.NORTH);
+        /**
+         * First Portion of the Add Particles Panel is the
+         * Single Particle Addition. This adds that settings
+         * to the Control Panel.
+         */
+        add(new AddSinglePanel(), BorderLayout.NORTH);
 
-        add(new ButtonPanel(), BorderLayout.SOUTH);
+        addBatchPanel = new AddBatchPanel(DEFAULT_FORM);
 
-        formPanel = new FormPanel(DEFAULT_FORM);
-
-        add(formPanel, BorderLayout.CENTER);
+        /**
+         * Second Portion of the Add Particles Panel is the
+         * Batch Particle Addition. This adds that settings
+         * to the Control Panel.
+         */
+        add(addBatchPanel, BorderLayout.CENTER);
 
         forms.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                remove(formPanel);
+                remove(addBatchPanel);
                 form = forms.getSelectedIndex() + 1;
-                formPanel = new FormPanel(form);
-                add(formPanel, BorderLayout.CENTER);
+                addBatchPanel = new AddBatchPanel(form);
+                add(addBatchPanel, BorderLayout.CENTER);
                 revalidate();
                 repaint();
             }
@@ -55,52 +63,65 @@ public class AddParticlePanel extends Panel {
     }
 
     /**
-     * Below are the Main Input Configurations like Count, Speed, and Angle
-    */
-    private class InputPanel extends Panel {
-        public InputPanel() {
-            super(new GridLayout(4, 2, 0, 5));
+     * The Panel that contains the Single Particle Addition
+     */
+    private class AddSinglePanel extends Panel {
+        public AddSinglePanel() {
+            super(new BorderLayout());
 
-            x = addInputBar("X", 10);
+            add(new InputPanel(), BorderLayout.NORTH);
 
-            y = addInputBar("Y", 10);
+            add(new ButtonPanel(), BorderLayout.SOUTH);
+        }
 
-            speed = addInputBar("Speed", 10);
+        /**
+         * Below are the Main Input Configurations like Count, Speed, and Angle
+        */
+        private class InputPanel extends Panel {
+            public InputPanel() {
+                super(new GridLayout(4, 2, 0, 5));
 
-            angle = addInputBar("Angle", 10);
+                x = addInputBar("X", 10);
+
+                y = addInputBar("Y", 10);
+
+                speed = addInputBar("Speed", 10);
+
+                angle = addInputBar("Angle", 10);
+            }
+        }
+
+        /**
+        * Below are the Button Configurations
+        */
+        private class ButtonPanel extends Panel {
+            public ButtonPanel() {
+                super(new GridLayout(1, 2));
+
+                addButton("Add Particles", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        resources.addParticle(new Particle(x.getText(), y.getText(), speed.getText(), angle.getText()));
+                    }
+                });
+        
+                addButton("Clear Particles", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        resources.clearParticles();
+                    }
+                });
+            }
         }
     }
 
     /**
-    * Below are the Button Configurations
-    */
-    private class ButtonPanel extends Panel {
-        public ButtonPanel() {
-            super(new GridLayout(1, 2));
-
-            addButton("Add Particles", new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    int start = Integer.parseInt(AddParticlePanel.this.start.getText());
-                    int end = Integer.parseInt(AddParticlePanel.this.end.getText());
-
-                    resources.addParticle(new Particle(x.getText(), y.getText(), speed.getText(), angle.getText()));
-                }
-            });
-    
-            addButton("Clear Particles", new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    resources.clearParticles();
-                }
-            });
-        }
-    }
-
-    private class FormPanel extends Panel {
+     * The Panel that contains the Batch Particle Addition
+     */
+    private class AddBatchPanel extends Panel {
         public static final String PANEL_TITLE = "Add in Batches";
 
-        public FormPanel(int _form) {
+        public AddBatchPanel(int _form) {
             super(PANEL_TITLE, new BorderLayout());
 
             // Set the Form
@@ -129,7 +150,10 @@ public class AddParticlePanel extends Panel {
             }
 
             // Add the Form Input Panel
-            add(new FormInputPanel(firstLabel, endLabel), BorderLayout.CENTER);            
+            add(new FormInputPanel(firstLabel, endLabel), BorderLayout.CENTER);   
+            
+            // Add the Form Button Panel
+            add(new FormButtonPanel(), BorderLayout.SOUTH);
         }
 
         public class FormInputPanel extends Panel {
@@ -141,6 +165,42 @@ public class AddParticlePanel extends Panel {
                 start = addInputBar(startLabel, 10);
 
                 end = addInputBar(endLabel, 10);
+            }
+        }
+
+        /**
+        * Below are the Button Configurations for the Form Panel
+        */
+        private class FormButtonPanel extends Panel {
+            public FormButtonPanel() {
+                super(new GridLayout(1, 1));
+
+                addButton("Add Particles in Batches", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        int start = Integer.parseInt(AddParticlePanel.this.start.getText());
+                        int end = Integer.parseInt(AddParticlePanel.this.end.getText());
+                        int count = Integer.parseInt(AddParticlePanel.this.count.getText());
+
+                        switch (form) {
+                            case 2:
+                                for (int i = count; 0 < count; i--) {
+                                    resources.addParticle(new Particle(x.getText(), y.getText(), speed.getText(), String.valueOf(i)));
+                                }
+                                return;
+                            case 3:
+                                for (int i = count; 0 < count; i--) {
+                                    resources.addParticle(new Particle(x.getText(), y.getText(), String.valueOf(i), angle.getText()));
+                                }
+                                return;
+                            default:
+                                for (int i = count; 0 < count; i--) {
+                                    resources.addParticle(new Particle(x.getText(), y.getText(), String.valueOf(i), angle.getText()));
+                                }
+                                break;
+                        }
+                    }
+                });
             }
         }
     }
