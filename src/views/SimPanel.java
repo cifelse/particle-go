@@ -5,9 +5,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -16,13 +18,13 @@ import models.Resources;
 import models.Wall;
 
 /**
- * The SimPanel class is a JPanel that is used to display the simulation of the particles and walls.
+ * The SimPanel class is the Main Panel that is used to display the simulation of the particles and walls.
  */
 public class SimPanel extends JPanel implements ActionListener  {
     // SimPanel Screen Size
-    private final static int WIDTH = 1280;
-    private final static int HEIGHT = 720;
-    private final static int FRAME_RATE = 15;
+    public final static int WIDTH = 1200;
+    public final static int HEIGHT = 720;
+    public final static int FRAME_RATE = 15;
     
     // Main Executor
     private final ExecutorService executor;
@@ -33,10 +35,9 @@ public class SimPanel extends JPanel implements ActionListener  {
 
     // Frames and Timers
     private int frameCount;
-    private String fpsDisplay;
     private Timer timer, fps;
 
-    public SimPanel(Executor executor, Resources resources) {
+    public SimPanel(Executor executor, Resources resources, ControlPanel controlPanel) {
         // Set The Walls and Particles
         this.walls = resources.getWalls();
         this.particles = resources.getParticles();
@@ -58,19 +59,11 @@ public class SimPanel extends JPanel implements ActionListener  {
         fps = new Timer(500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fpsDisplay = String.valueOf(frameCount * 2);
+                controlPanel.setFPS(frameCount * 2);
                 frameCount =  0;
             }
         });
         fps.start();
-    }
-
-    /**
-     * Get the current Frames per second
-     * @return The current FPS
-     */
-    public String getFPS() {
-        return this.fpsDisplay;
     }
 
     @Override
@@ -97,7 +90,6 @@ public class SimPanel extends JPanel implements ActionListener  {
 
     @Override
     public void actionPerformed(ActionEvent e){
-
         for (Particle particle : particles) {
             executor.submit(() -> {
                 synchronized(particle) {

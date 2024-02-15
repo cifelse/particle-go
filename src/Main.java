@@ -4,20 +4,22 @@ import java.util.concurrent.Executors;
 import javax.swing.SwingUtilities;
 
 import models.Resources;
-import views.Window;
+import models.Simulator;
 
 public class Main {
     // Max Threads
-    private final static int MAX_THREADS = Runtime.getRuntime().availableProcessors();
+    public final static int MAX_THREADS = Runtime.getRuntime().availableProcessors();
 
     public static void main(String[] args) {
-        ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);
-
         SwingUtilities.invokeLater(() -> {
+            // Create the Brain
+            ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);
+
+            // Create the Heart
             Resources resources = new Resources();
             
-            // Open a new Particle Simulator Window
-            new Window(executor, resources);
+            // Build the Body
+            new Simulator(executor, resources);
         });
     }
 }

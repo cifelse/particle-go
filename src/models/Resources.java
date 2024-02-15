@@ -19,22 +19,22 @@ public class Resources {
         return this.walls;
     }
 
-    public void addParticle(Particle particle){
+    public void addParticle(Particle particle) {
         this.particles.add(particle);
     }
 
-    public void addWall(Wall wall){
+    public void addWall(Wall wall) {
         if (!walls.contains(wall)) {
             this.walls.add(wall);
         }
     }
 
-    public void clearParticles(){
+    public void clearParticles() {
         this.particles.clear();
         System.gc();
     }
 
-    public void clearWalls(){
+    public void clearWalls() {
         this.walls.clear();
         System.gc();
     }

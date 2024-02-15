@@ -1,9 +1,14 @@
 package views;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Shape;
+import java.awt.Graphics;
 import java.awt.geom.RoundRectangle2D;
 
+import javax.swing.JTextField;
+
+/**
+ * The InputField class is a JTextField that is used to create a rounded input field.
+ */
 public class InputField extends JTextField {
     private Shape shape;
 

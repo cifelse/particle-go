@@ -3,43 +3,31 @@ package views;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 
-import models.Resources;
-
 import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import java.util.concurrent.ExecutorService;
 
+/**
+ * The Window class is a JFrame that is used to display the simulation and control panels.
+ */
 public class Window extends JFrame {
     // Window Title
-    private final static String TITLE = "Particle Simulator";
+    public final static String TITLE = "Particle Simulator";
 
     // Window Size
-    private final static int WIDTH = 1480;
+    public final static int WIDTH = 1480;
 
-    private final static int HEIGHT = 720;
+    public final static int HEIGHT = 720;
 
-    // Resources
-    private final Resources resources;
-
-    // Executor
-    private final ExecutorService executor;
-
-    // The Screen where the Simulation runs
-    private SimPanel simPanel;
-
-    // The Control Panel
-    private ControlPanel controlPanel;
-
-    public Window(ExecutorService executor, Resources resources) {
+    /**
+     * The Window constructor is used to create a new Window.
+     * @param executor - The executor to be used.
+     */
+    public Window(ExecutorService executor) {
         // Set the title of the window
         super(TITLE);
-        
-        // Set the resources
-        this.resources = resources;
-
-        // Set the executor
-        this.executor = executor;
 
         // Set the default close operation
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -56,29 +44,31 @@ public class Window extends JFrame {
         // Set the window to be visible
         setVisible(true);
 
-        // Create the Sim Panel
-        simPanel = new SimPanel(executor, resources);
-        
-        // Create the Control Panel
-        controlPanel = new ControlPanel(executor, resources, simPanel);
-
-        // Create the a Split Pane for the Sim Panel and Control Panel
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerSize(0);
-        splitPane.setDividerLocation(1280);
-        splitPane.add(simPanel);
-        splitPane.add(controlPanel);
-
-        // Add the split pane to the window
-        setContentPane(splitPane);
-
         // Close everything when X is clicked
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
                 super.windowClosed(e);
                 executor.shutdownNow();
+                System.gc();
             }
         });
+    }
+
+    /**
+     * The setPanels method is used to set the panels of the window.
+     * @param simPanel - The simulation panel
+     * @param controlPanel - The control panel
+     */
+    public void setPanels(SimPanel simPanel, ControlPanel controlPanel) {
+        // Create the a Split Pane for the Sim Panel and Control Panel
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setDividerSize(1);
+        splitPane.setDividerLocation(SimPanel.WIDTH);
+        splitPane.add(simPanel);
+        splitPane.add(controlPanel);
+
+        // Add the split pane to the window
+        setContentPane(splitPane);
     }
 }

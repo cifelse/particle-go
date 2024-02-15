@@ -1,6 +1,7 @@
 package views;
 
-import java.awt.GridLayout;
+import java.awt.BorderLayout;
+
 import java.util.concurrent.Executor;
 
 import javax.swing.JLabel;
@@ -14,25 +15,44 @@ import models.Resources;
  */
 public class ControlPanel extends JPanel {
 
-    private AddParticlePanel addParticlePanel;
-
-    private AddWallPanel addWallPanel;
+    // FPS Counter
+    private FPS fps = new FPS();
 
     /**
      * The ControlPanel constructor is used to create a new ControlPanel.
      * @param executor The executor to be used.
      * @param resources The resources to be used.
-     * @param simPanel The simPanel to be used.
      */
-    public ControlPanel(Executor executor, Resources resources, SimPanel simPanel) {
-        add(new FPS(simPanel));
+    public ControlPanel(Executor executor, Resources resources) {
+        // Set the Layout of the panel
+        setLayout(new BorderLayout());
+
+        // Add the FPS Panel
+        add(fps, BorderLayout.NORTH);
+
+        // Add the Add Particle Panel
+        add(new AddParticlePanel(resources), BorderLayout.CENTER);
+
+        // Add the Add Wall Panel
+        add(new AddWallPanel(resources), BorderLayout.SOUTH);
     }
 
+    /**
+     * The setFPS method is used to set the frames per second.
+     * @param fps The frames per second.
+     */
+    public void setFPS(int fps) {
+        this.fps.setLabel(String.valueOf(fps));
+    }
+
+    /**
+     * The FPS class is a JPanel that is used to display the frames per second.
+     */
     class FPS extends JPanel {
         private JLabel counter;
 
-        public FPS(SimPanel simPanel) {
-            setLayout(new GridLayout(1, 2));
+        public FPS() {
+            // Set the Border
             setBorder(new EmptyBorder(10, 0, 10, 0));
             
             // Add the FPS Label
@@ -40,12 +60,11 @@ public class ControlPanel extends JPanel {
 
             // Add the FPS Counter
             counter = new JLabel("0", JLabel.LEFT);
-            // counter.setText(simPanel.getFPS());
             add(counter);
         }
 
-        public JLabel getCounterLabel() {
-            return this.counter;
+        public void setLabel(String label) {
+            this.counter.setText(label);
         }
     }
 }

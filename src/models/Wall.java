@@ -1,11 +1,13 @@
 package models;
 
 public class Wall {
+    // The position of the Wall in the Screen
     private final int x1;
     private final int x2;
     private final int y1;
     private final int y2;
     
+    // The angle of the Wall
     private final float angle;
 
     /**
@@ -15,7 +17,23 @@ public class Wall {
      * @param y1 - y coordinate of the first point
      * @param y2 - y coordinate of the second point
      */
-    public Wall(int x1, int x2, int y1, int y2){
+    public Wall(String x1, String x2, String y1, String y2) {
+        this.x1 = Integer.parseInt(x1);
+        this.x2 = Integer.parseInt(x2);
+        this.y1 = Integer.parseInt(y1);
+        this.y2 = Integer.parseInt(y2);
+
+        this.angle = (float) Math.atan2((this.y2 - this.y1), (this.x2 - this.x1));
+    }
+
+    /**
+     * Constructor for Wall
+     * @param x1 - x coordinate of the first point
+     * @param x2 - x coordinate of the second point
+     * @param y1 - y coordinate of the first point
+     * @param y2 - y coordinate of the second point
+     */
+    public Wall(int x1, int x2, int y1, int y2) {
         this.x1 = x1;
         this.x2 = x2;
         this.y1 = y1;
@@ -24,7 +42,7 @@ public class Wall {
         this.angle = (float) Math.atan2((y2 - y1), (x2 - x1));
     }
 
-    public boolean hasCollided(int x, int y){
+    public boolean hasCollided(int x, int y) {
         float d1 = (float) (Math.sqrt(Math.pow(x1 - x, 2) + (Math.pow(y1 - y, 2))));      // A to C
 
         float d2 = (float) (Math.sqrt(Math.pow(x2 - x, 2) + (Math.pow(y2 - y, 2))));      // B to C
