@@ -255,9 +255,14 @@ public class AddParticlePanel extends Panel {
                                     switch (form) {
                                         // Add the Special Form 2
                                         case 2:
+                                            float diff = (end - start) / (count - 1);
+                                            float currentAngle = start;
+
                                             for (int i = count; i > 0; i--) {
                                                 synchronized(resources) {
-                                                    resources.addParticle(new Particle(finalX, finalY, finalSpeed, finalAngle));
+                                                    resources.addParticle(new Particle(finalX, finalY, finalSpeed, currentAngle));
+                                                    System.out.println(currentAngle);
+                                                    currentAngle += diff;
                                                     Thread.sleep(INTERVAL);
                                                 }
                                             }
@@ -268,7 +273,7 @@ public class AddParticlePanel extends Panel {
                                             float step = (end - start) / (count - 1);
                                             float currentSpeed = start;
                                             
-                                            for (int i = 0; i < count; i++) {
+                                            for (int i = count; i > 0; i--) {
                                                 synchronized(resources) {
                                                     resources.addParticle(new Particle(finalX, finalY, currentSpeed, finalAngle));
                                                     currentSpeed += step;
@@ -284,7 +289,7 @@ public class AddParticlePanel extends Panel {
 
                                             int x2 = Integer.parseInt(AddParticlePanel.this.start2.getText());
                                             int y2 = Integer.parseInt(AddParticlePanel.this.end2.getText());
-
+                                            
                                             for (int i = count; i > 0; i--) {
                                                 synchronized(resources) {
                                                     resources.addParticle(new Particle(finalX, finalY, finalSpeed, finalAngle));
