@@ -77,16 +77,17 @@ public class SimPanel extends JPanel implements ActionListener  {
         if (g instanceof Graphics2D) {
             Graphics2D g2d = (Graphics2D) g;
             g2d.setColor(Color.WHITE);
-    
-            for (Particle p : particles) {
-                g2d.drawOval(p.getX(), p.getY(), Particle.DIAMETER, Particle.DIAMETER);
-
-                // System.out.printf("Particle Speed: %f\n", p.getSpeed());
+            
+            synchronized(particles) {
+                for (Particle p : particles) {
+                    g2d.drawOval(p.getX(), p.getY(), Particle.DIAMETER, Particle.DIAMETER);
+                }
             }
             
-            // System.out.println("\n\n");
-            for (Wall w : walls) {
-                g2d.drawLine(w.getX1(), w.getY1(), w.getX2(), w.getY2());
+            synchronized(walls) {
+                for (Wall w : walls) {
+                    g2d.drawLine(w.getX1(), w.getY1(), w.getX2(), w.getY2());
+                }
             }
         }
 
@@ -100,7 +101,7 @@ public class SimPanel extends JPanel implements ActionListener  {
                 synchronized(particle) {
                     int dia = Particle.DIAMETER;
 
-                    // Check if particle hits walls of the SimPanel
+                    // // Check if particle hits walls of the SimPanel
                     if (particle.getX() - dia / 2 <= 0 || particle.getX() + dia / 2 >= (SimPanel.WIDTH - dia)) {
                         particle.setVelocityX(-particle.getVelocityX());
                     }
@@ -112,7 +113,7 @@ public class SimPanel extends JPanel implements ActionListener  {
                     // Check if particle hits walls
                     else {
                         for (Wall w : walls){
-                            if(w.hasCollided(particle.getFutureX((float) (FRAME_RATE / 1000.0)), particle.getFutureY((float) (FRAME_RATE / 1000.0)))){
+                            if(w.hasCollided(particle.getFutureX((float) (FRAME_RATE / 1000)), particle.getFutureY((float) (FRAME_RATE / 1000)))) {
 
                                 float newX = (float) Math.sin(w.getAngle());
                                 float newY = (float) Math.cos(w.getAngle());

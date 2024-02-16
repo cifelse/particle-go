@@ -41,7 +41,7 @@ public class AddWallPanel extends Panel {
 
             y1 = addInputBar("<html>Y<sub>1</sub</html>", 5);
 
-            x1 = addInputBar("<html>X<sub>2</sub</html>", 5);
+            x2 = addInputBar("<html>X<sub>2</sub</html>", 5);
 
             y2 = addInputBar("<html>Y<sub>2</sub</html>", 5);
         }
