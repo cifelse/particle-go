@@ -255,47 +255,87 @@ public class AddParticlePanel extends Panel {
                                     switch (form) {
                                         // Add the Special Form 2
                                         case 2:
-                                            float diff = (end - start) / (count - 1);
-                                            float currentAngle = start;
+                                            executor.execute(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    try {
+                                                        float diff = (end - start) / (count - 1);
+                                                        float currentAngle = start;
 
-                                            for (int i = count; i > 0; i--) {
-                                                synchronized(resources) {
-                                                    resources.addParticle(new Particle(finalX, finalY, finalSpeed, currentAngle));
-                                                    System.out.println(currentAngle);
-                                                    currentAngle += diff;
-                                                    Thread.sleep(INTERVAL);
+                                                        for (int i = count; i > 0; i--) {
+                                                            synchronized(resources) {
+                                                                resources.addParticle(new Particle(finalX, finalY, finalSpeed, currentAngle));
+                                                                System.out.println(currentAngle);
+                                                                currentAngle += diff;
+                                                                Thread.sleep(INTERVAL);
+                                                            }
+                                                        }
+                                                    }
+                                                    catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
                                                 }
-                                            }
+                                            });
                                             break;
-                                        
                                         // Add the Special Form 3
                                         case 3:
-                                            float step = (end - start) / (count - 1);
-                                            float currentSpeed = start;
-                                            
-                                            for (int i = count; i > 0; i--) {
-                                                synchronized(resources) {
-                                                    resources.addParticle(new Particle(finalX, finalY, currentSpeed, finalAngle));
-                                                    currentSpeed += step;
-                                                    Thread.sleep(INTERVAL);
+                                            executor.execute(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    try {
+                                                        float step = (end - start) / (count - 1);
+                                                        float currentSpeed = start;
+                                                        
+                                                        for (int i = count; i > 0; i--) {
+                                                            synchronized(resources) {
+                                                                resources.addParticle(new Particle(finalX, finalY, currentSpeed, finalAngle));
+                                                                currentSpeed += step;
+                                                                Thread.sleep(INTERVAL);
+                                                            }
+                                                        }
+                                                    }
+                                                    catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
                                                 }
-                                            }
+                                            });
                                             break;
 
                                         // Add the Special Form 1 or the Default Form 
                                         default:
-                                            int x1 = Integer.parseInt(AddParticlePanel.this.start.getText());
-                                            int y1 = Integer.parseInt(AddParticlePanel.this.end.getText());
+                                            executor.execute(new Runnable() {
+                                                @Override
+                                                public void run(){
+                                                    try {
+                                                        float x1 = Integer.parseInt(AddParticlePanel.this.start.getText());
+                                                        float y1 = Integer.parseInt(AddParticlePanel.this.start2.getText());
+                                                        float x2 = Integer.parseInt(AddParticlePanel.this.end.getText());
+                                                        float y2 = Integer.parseInt(AddParticlePanel.this.end2.getText());
+                                                        
+                                                        //Get start and end points of each particle
+                                                        int[][] particles = new int[count][2];
 
-                                            int x2 = Integer.parseInt(AddParticlePanel.this.start2.getText());
-                                            int y2 = Integer.parseInt(AddParticlePanel.this.end2.getText());
-                                            
-                                            for (int i = count; i > 0; i--) {
-                                                synchronized(resources) {
-                                                    resources.addParticle(new Particle(finalX, finalY, finalSpeed, finalAngle));
-                                                    Thread.sleep(INTERVAL);
+                                                        //Determine sthe change between x and y coordinates
+                                                        float dx = (float) (x2 - x1) / (count);
+                                                        float dy = (float) (y2 - y1) / (count);
+
+                                                        //Incrementally increments dx and dy per particle
+                                                        for (int i = 0; i < count; i++) {
+                                                            particles[i][0] = (int) (x1 + i * dx);
+                                                            particles[i][1] = (int) (y1 + i * dy);
+                                                        }
+
+                                                        for (int i = 0; i < count; i++) {
+                                                            synchronized(resources) {
+                                                                resources.addParticle(new Particle(particles[i][0], particles[i][1], finalSpeed, finalAngle));
+                                                                Thread.sleep(INTERVAL);
+                                                            }
+                                                        }
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
                                                 }
-                                            }
+                                            });
                                             break;
                                     }
                                 } catch (Exception e) {

@@ -6,7 +6,7 @@ import javax.swing.SwingUtilities;
 import models.Resources;
 import views.Window;
 
-public class Main {
+public class Server {
     // Max Threads
     public final static int MAX_THREADS = Runtime.getRuntime().availableProcessors();
 

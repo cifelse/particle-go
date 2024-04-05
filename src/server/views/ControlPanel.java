@@ -30,11 +30,11 @@ public class ControlPanel extends JPanel {
         // Add the FPS Panel
         add(fps, BorderLayout.NORTH);
 
-        // Add the Add Particle Panel
-        add(new AddParticlePanel(executor, resources), BorderLayout.CENTER);
+        // Add the Guide Panel
+        add(new GuidePanel(), BorderLayout.CENTER);
 
-        // Add the Add Wall Panel
-        add(new AddWallPanel(resources), BorderLayout.SOUTH);
+        // Add the Add Particle Panel
+        add(new AddParticlePanel(executor, resources), BorderLayout.SOUTH);
     }
 
     /**

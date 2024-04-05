@@ -29,7 +29,7 @@ public class Particle {
      */
     public Particle(String spawnX, String spawnY, String speed, String angle) {
         int tempX = Integer.parseInt(spawnX);
-        int tempY = Integer.parseInt(spawnY);
+        int tempY = 720 - Integer.parseInt(spawnY);
 
         this.x = tempX != 0 ? (tempX == SimPanel.WIDTH ? tempX - DIAMETER : tempX) : tempX + DIAMETER;
         this.y = tempY != 0 ? (tempY == SimPanel.HEIGHT ? tempY - DIAMETER : tempY) : tempY + DIAMETER;
@@ -51,7 +51,7 @@ public class Particle {
      */
     public Particle(int spawnX, int spawnY, float speed, float angle) {
         this.x = spawnX != 0 ? (spawnX == SimPanel.WIDTH ? spawnX - DIAMETER : spawnX) : spawnX + DIAMETER;
-        this.y = spawnY != 0 ? (spawnY == SimPanel.HEIGHT ? spawnY - DIAMETER : spawnY) : spawnY + DIAMETER;
+        this.y = 720 - (spawnY != 0 ? (spawnY == SimPanel.HEIGHT ? spawnY - DIAMETER : spawnY) : spawnY + DIAMETER);
         
         this.speed = speed;
         this.angle = angle % 360;

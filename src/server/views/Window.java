@@ -16,7 +16,7 @@ import models.Resources;
  */
 public class Window extends JFrame {
     // Window Title
-    public final static String TITLE = "Particle Simulator";
+    public final static String TITLE = "Particle Go Server";
 
     // Window Size
     public final static int WIDTH = 1530;
