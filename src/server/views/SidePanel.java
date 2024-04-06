@@ -13,7 +13,7 @@ import models.Resources;
 /**
  * The ControlPanel class is a JPanel that is used to summon particles and walls.
  */
-public class ControlPanel extends JPanel {
+public class SidePanel extends JPanel {
 
     // FPS Counter
     private FPS fps = new FPS();
@@ -23,7 +23,7 @@ public class ControlPanel extends JPanel {
      * @param executor The executor to be used.
      * @param resources The resources to be used.
      */
-    public ControlPanel(ExecutorService executor, Resources resources) {
+    public SidePanel(ExecutorService executor, Resources resources) {
         // Set the Layout of the panel
         setLayout(new BorderLayout());
 
@@ -43,6 +43,35 @@ public class ControlPanel extends JPanel {
      */
     public void setFPS(int fps) {
         this.fps.setLabel(String.valueOf(fps));
+    }
+
+    /**
+     * The Guides shown at the Side Panel
+     */
+    public class GuidePanel extends Panel {
+        // Border Name
+        private static final String PANEL_TITLE = "Welcome to Particle Go!";
+    
+        public GuidePanel() {
+            // Call the Panel constructor
+            super(PANEL_TITLE, new BorderLayout());
+    
+            // Add the Input Panel
+            add(new InstructionPanel(), BorderLayout.NORTH);
+        }
+    
+        /**
+         * Below are the Instructions Displayed
+         */
+        private class InstructionPanel extends Panel {
+            public InstructionPanel() {
+                super(new BorderLayout());
+    
+                add(new JLabel("<html>This is the Master Control Center. In here, you can see where the explorers are. Likewise, you can add particles to send to your explorers.<br/><br/></html>"), BorderLayout.NORTH);
+    
+                add(new JLabel("<html>To <B>add a particle</B>, interact with the controls down below.</html>"), BorderLayout.SOUTH);
+            }
+        }
     }
 
     /**

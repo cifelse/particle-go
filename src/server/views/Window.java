@@ -58,15 +58,15 @@ public class Window extends JFrame {
 
         // Create the a Split Pane for the Sim Panel and Control Panel
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerLocation(SimPanel.WIDTH);
+        splitPane.setDividerLocation(Screen.WIDTH);
 
-        // Create the Control Panel
-        ControlPanel controlPanel = new ControlPanel(executor, resources);
+        // Create the Side Panel
+        SidePanel controlPanel = new SidePanel(executor, resources);
         splitPane.add(controlPanel, JSplitPane.RIGHT);
 
-        // Create the Sim Panel
-        SimPanel simPanel = new SimPanel(executor, resources, controlPanel);
-        splitPane.add(simPanel, JSplitPane.LEFT);
+        // Create the Screen
+        Screen screen = new Screen(executor, resources, controlPanel);
+        splitPane.add(screen, JSplitPane.LEFT);
 
         // Add the split pane to the window
         setContentPane(splitPane);

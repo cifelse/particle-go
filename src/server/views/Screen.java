@@ -19,7 +19,7 @@ import models.Resources;
 /**
  * The SimPanel class is the Main Panel that is used to display the simulation of the particles and walls.
  */
-public class SimPanel extends JPanel implements ActionListener  {
+public class Screen extends JPanel implements ActionListener  {
     // SimPanel Screen Size
     public final static int WIDTH = 1280;
     public final static int HEIGHT = 720;
@@ -28,14 +28,14 @@ public class SimPanel extends JPanel implements ActionListener  {
     // Main Executor
     private final ExecutorService executor;
     
-    // Walls and Particles
+    // Particles
     private CopyOnWriteArrayList<Particle> particles;
 
     // Frames and Timers
     private int frameCount;
     private Timer timer, fps;
 
-    public SimPanel(ExecutorService executor, Resources resources, ControlPanel controlPanel) {
+    public Screen(ExecutorService executor, Resources resources, SidePanel controlPanel) {
         // Set The Walls and Particles
         this.particles = resources.getParticles();
 
@@ -93,11 +93,11 @@ public class SimPanel extends JPanel implements ActionListener  {
                     int dia = Particle.DIAMETER;
 
                     // // Check if particle hits walls of the SimPanel
-                    if (particle.getX() - dia / 2 <= 0 || particle.getX() + dia / 2 >= (SimPanel.WIDTH - dia)) {
+                    if (particle.getX() - dia / 2 <= 0 || particle.getX() + dia / 2 >= (Screen.WIDTH - dia)) {
                         particle.setVelocityX(-particle.getVelocityX());
                     }
                     
-                    if (particle.getY() - dia / 2 <= 0 || particle.getY() + dia / 2 >= (SimPanel.HEIGHT - (dia * 7))) {
+                    if (particle.getY() - dia / 2 <= 0 || particle.getY() + dia / 2 >= (Screen.HEIGHT - (dia * 7))) {
                         particle.setVelocityY(-particle.getVelocityY());
                     }
 
