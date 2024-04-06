@@ -9,7 +9,6 @@ import javax.swing.border.EmptyBorder;
  * The ControlPanel class is a JPanel that is used to summon particles and walls.
  */
 public class SidePanel extends JPanel {
-
     // FPS Counter
     private FPS fps = new FPS();
 
