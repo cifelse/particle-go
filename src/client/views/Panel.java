@@ -58,6 +58,18 @@ public abstract class Panel extends JPanel {
     }
 
     /**
+     * The addInputBar method is used to add an input bar to the panel.
+     * @param label - The label to be added to the input bar
+     * @param size - The size of the input bar
+     */
+    public InputField addInputBar(String label) {
+        add(new JLabel(label + ": ", JLabel.CENTER));
+        InputField temp = new InputField(10);
+        add(temp);
+        return temp;
+    }
+
+    /**
      * The addButton method is used to add a button to the panel.
      * @param label - The label to be added to the button
      * @param listener - The listener to be added to the button
