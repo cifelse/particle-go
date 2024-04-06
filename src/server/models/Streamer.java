@@ -95,6 +95,8 @@ public class Streamer implements Modem {
                 executorService.submit(new Thread(() -> {
                     String username = receive(socket);
 
+                    System.out.println(username + "has joined the lobby.");
+
                     resources.addPlayer(new Player(500, 500, username, socket));
                 }));
             }
