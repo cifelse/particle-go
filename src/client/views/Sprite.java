@@ -8,6 +8,10 @@ import javax.swing.Timer;
 import javax.imageio.ImageIO;
 
 public class Sprite {
+    // Size of the Sprite in the Screen
+    public static final int WIDTH = 200;
+    public static final int HEIGHT = 200;
+
     // Direction Constants
     public static final int FORWARD = 0;
     public static final int BACKWARD = 1;
@@ -67,24 +71,52 @@ public class Sprite {
 
     private String[] currentPaths;
     private int currentImageIndex;
+    private boolean stand;
 
     private Timer timer;
 
     public Sprite() {
-        // Create Timer to change image every 1 second
-        timer = new Timer(100, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                currentImageIndex = (currentImageIndex + 1) % currentPaths.length;
-            }
-        });
-        timer.start();
+        // Set the Sprite to Stand only
+        this.stand = true;
 
         // Initialize the current image index
         currentImageIndex = 0;
 
         // Default initial image is Forward
         setImage(FORWARD);
+
+        // Create Timer to change image every 1 second
+        timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!stand) currentImageIndex = (currentImageIndex + 1) % currentPaths.length;
+            }
+        });
+        timer.start();
+    }
+
+    /**
+     * Initialize a Sprite with a custom Direction
+     * @param direction - Sprire Direction
+     */
+    public Sprite(int direction) {
+        // Set the Sprite to Stand only
+        this.stand = true;
+
+        // Initialize the current image index
+        currentImageIndex = 0;
+
+        // Default initial image is Forward
+        setImage(direction);
+
+        // Create Timer to change image every 1 second
+        timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!stand) currentImageIndex = (currentImageIndex + 1) % currentPaths.length;
+            }
+        });
+        timer.start();
     }
 
     /**
@@ -92,11 +124,12 @@ public class Sprite {
      * @return - The current image of the Sprite
      */
     public Image getImage() {
-        return this.currentImages[currentImageIndex].getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        return this.currentImages[currentImageIndex].getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
     }
 
     public Image pauseImage() {
-        return this.currentImages[0].getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        this.stand = true;
+        return this.currentImages[0].getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
     }
 
     /**
@@ -104,6 +137,8 @@ public class Sprite {
      * @param direction
      */
     public void setImage(int direction) {
+        this.stand = false;
+
         // Set the current paths
         switch (direction) {
             case FORWARD:

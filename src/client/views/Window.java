@@ -1,6 +1,7 @@
 package client.views;
 
 import javax.swing.JFrame;
+import javax.swing.JSplitPane;
 import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -14,7 +15,7 @@ public class Window extends JFrame {
     public final static String TITLE = "Particle Go";
 
     // Window Size
-    public final static int WIDTH = 1530;
+    public final static int WIDTH = 970;
 
     public final static int HEIGHT = 720;
 
@@ -50,6 +51,21 @@ public class Window extends JFrame {
                 System.gc();
             }
         });
+
+        // Create the a Split Pane for the Sim Panel and Control Panel
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setDividerLocation(Screen.WIDTH);
+
+        // Create the Side Panel
+        SidePanel sidePanel = new SidePanel("localhost", "cifelse");
+        splitPane.add(sidePanel, JSplitPane.RIGHT);
+
+        // Create the Screen
+        Screen screen = new Screen(sidePanel);
+        splitPane.add(screen, JSplitPane.LEFT);
+
+        // Add the split pane to the window
+        setContentPane(splitPane);
     }
 }
 
