@@ -17,10 +17,10 @@ import models.Particle;
 import models.Resources;
 
 /**
- * The SimPanel class is the Main Panel that is used to display the simulation of the particles and walls.
+ * The Main Panel to display the simulation of the particles and players.
  */
 public class Screen extends JPanel implements ActionListener  {
-    // SimPanel Screen Size
+    // Screen Size
     public final static int WIDTH = 1280;
     public final static int HEIGHT = 720;
     public final static int FRAME_RATE = 15;
