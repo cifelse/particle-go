@@ -4,6 +4,7 @@ import java.util.concurrent.Executors;
 import javax.swing.SwingUtilities;
 
 import models.Resources;
+import models.Streamer;
 import views.Window;
 
 public class Server {
@@ -20,6 +21,11 @@ public class Server {
             
             // Build the Body
             new Window(executor, resources);
+
+            // Create a Streamer for Sockets to Watch
+            executor.submit(new Thread(() -> {
+                new Streamer(executor, resources);
+            }));
         });
     }
 }
