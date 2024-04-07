@@ -98,8 +98,7 @@ public class Screen extends JPanel implements ActionListener {
 
         // Add StreamListener
         this.streamListener = new StreamListener(socket);
-        
-        new Thread(this.streamListener).start();
+        executorService.submit(this.streamListener);
     }
 
     @Override
@@ -115,12 +114,15 @@ public class Screen extends JPanel implements ActionListener {
 
             // Draw the username above the sprite
             g2d.setFont(new Font("Arial", Font.BOLD, FONT_SIZE));
-            g2d.drawString(username, (Screen.WIDTH - g2d.getFontMetrics().stringWidth(username)) / 2, (Screen.HEIGHT / 2) - Sprite.HEIGHT / 2 - g2d.getFont().getSize());
+            g2d.drawString(username, (Screen.WIDTH - g2d.getFontMetrics().stringWidth(username)) / 2, (Screen.HEIGHT / 2) - Sprite.HEIGHT / 2 - FONT_SIZE);
             
             // Draw the Image
             g2d.drawImage(this.sprite.getImage(), (Screen.WIDTH / 2) - Sprite.WIDTH / 2, (Screen.HEIGHT / 2) - Sprite.HEIGHT / 2, this); 
             
+            // Paint the Particles
             synchronized (particles) {
+                g2d.setColor(Color.WHITE);
+
                 // Check if there's frames to Paint
                 String frame = particles.poll();
 
@@ -130,10 +132,18 @@ public class Screen extends JPanel implements ActionListener {
                 // Get the Particle Coordinates
                 String[] particles = frame.split(";");
 
-                // Paint the Coordinates
+                int rad = (int) Math.floor(DIAMETER / 2);
+                
                 for (String p : particles) {
                     String[] coord = p.split(",");
-                    System.out.println(coord[0] + "," + coord[1]);
+
+                    int x = Integer.parseInt(coord[0]);
+                    int y = Integer.parseInt(coord[1]);
+
+                    x = x <= rad ? rad : (x >= Screen.WIDTH ? x - rad : x);
+                    y = y <= rad ? rad : (y >= Screen.HEIGHT ? y - rad : y);
+        
+                    g2d.drawOval(x, Screen.HEIGHT - y, DIAMETER, DIAMETER);
                     g2d.drawOval(Integer.parseInt(coord[0]), Integer.parseInt(coord[1]), DIAMETER, DIAMETER);
                 }
             }

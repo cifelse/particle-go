@@ -79,7 +79,7 @@ public class Screen extends JPanel implements ActionListener  {
         if (g instanceof Graphics2D) {
             Graphics2D g2d = (Graphics2D) g;
 
-            int rad = (int) Math.floor(Particle.DIAMETER / 2) ;
+            int rad = (int) Math.floor(Particle.DIAMETER / 2);
 
             synchronized (particles) {
                 g2d.setColor(Color.WHITE);
