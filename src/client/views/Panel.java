@@ -97,7 +97,6 @@ public abstract class Panel extends JPanel {
             super(size);
             setOpaque(false); // As suggested by @AVD in comment.
             setHorizontalAlignment(JTextField.CENTER);
-            setText("0");
         }
 
         protected void paintComponent(Graphics g) {

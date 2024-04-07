@@ -10,7 +10,9 @@ import javax.swing.border.EmptyBorder;
  */
 public class SidePanel extends JPanel {
     // FPS Counter
-    private FPS fps = new FPS();
+    private FPS fps;
+
+    private StatusPanel statusPanel;
 
     /**
      * The ControlPanel constructor is used to create a new ControlPanel.
@@ -18,6 +20,8 @@ public class SidePanel extends JPanel {
      * @param resources The resources to be used.
      */
     public SidePanel(String ip, String username) {
+        this.fps = new FPS();
+
         // Set the Layout of the panel
         setLayout(new BorderLayout());
 
@@ -25,7 +29,8 @@ public class SidePanel extends JPanel {
         add(fps, BorderLayout.NORTH);
 
         // Add the Guide Panel
-        add(new InstructionPanel(ip, username), BorderLayout.CENTER);
+        this.statusPanel = new StatusPanel(ip, username);
+        add(statusPanel, BorderLayout.CENTER);
     }
 
     /**
@@ -36,14 +41,29 @@ public class SidePanel extends JPanel {
         this.fps.setLabel(String.valueOf(fps));
     }
 
+    public void setStatus(boolean status) {
+        if (!status) {
+            remove(statusPanel);
+            add(new StatusPanel(), BorderLayout.CENTER);
+        }
+    }
+
     /**
      * Below are the Instructions Displayed
      */
-    private class InstructionPanel extends Panel {
-        public InstructionPanel(String localhost, String username) {
+    private class StatusPanel extends Panel {
+        public StatusPanel(String localhost, String username) {
             super("Welcome to Particle Go!", new BorderLayout());
 
             String text = "<html><br>Connected at: <B>" + localhost + "</B><br><br>Hello, " + username + "! You are now connected to world of Particle Go!<br><br>Roam around using the <B>W A S D</B> keys or your arrow keys.</html>";
+
+            add(new JLabel(text), BorderLayout.NORTH);
+        }
+
+        public StatusPanel() {
+            super("Welcome to Particle Go", new BorderLayout());
+
+            String text = "<html><br>Connected at: <B>DISCONNECTED</B><br><br><B>Error:</B> It looks like either the Server died or you have lost connection. Please restart this application again to try again.</html>";
 
             add(new JLabel(text), BorderLayout.NORTH);
         }

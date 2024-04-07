@@ -7,16 +7,24 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
+import java.awt.event.KeyAdapter;
+import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ExecutorService;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import client.models.Modem;
+
 /**
- * The SimPanel class is the Main Panel that is used to display the simulation of the particles and walls.
+ * The Main Panel that is used to display the simulation of the particles and players.
  */
-public class Screen extends JPanel implements ActionListener, KeyListener {
-    // SimPanel Screen Size
+public class Screen extends JPanel implements ActionListener {
+    // Particle Config
+    public final int DIAMETER = 500;
+
+    // Screen Size
     public final static int WIDTH = 720;
     public final static int HEIGHT = 720;
     public final static int FRAME_RATE = 15;
@@ -25,10 +33,26 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     private int frameCount;
     private Timer timer, fps;
 
+    // Side Panel
+    SidePanel sidePanel;
+
+    // Stream
+    private StreamListener streamListener;
+    
     // The Sprite
     private Sprite sprite;
 
-    public Screen(SidePanel sidepanel) {
+    // Frames 
+    private Queue<String> particles;
+
+    // private Queue<String> players;
+
+    /**
+     * Default Screen Constructor
+     * @param socket - Client Socket to listen
+     * @param sidepanel - The SidePanel for the Ping and FPS
+     */
+    public Screen(ExecutorService executorService, Socket socket, SidePanel sidepanel) {
         // Focus on the Screen always
         setFocusable(true);
 
@@ -38,6 +62,9 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         // Set the preferred size of the panel
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
+
+        // Store SidePanel locally
+        this.sidePanel = sidepanel;
 
         // Set the Initial Frame Count
         frameCount = 0;
@@ -59,27 +86,49 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         // Initialize the Sprite
         this.sprite = new Sprite(Sprite.FORWARD);
 
-        // Add Key Listener
-        addKeyListener(this);
+        this.particles = new LinkedList<String>();
+        // this.players = new LinkedList<String>();
+
+        // Add Custom KeyListener
+        addKeyListener(new CustomKeyListener(socket));
+
+        // Add StreamListener
+        this.streamListener = new StreamListener(socket);
+        
+        new Thread(this.streamListener).start();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
+        if (!streamListener.isConnected()) return;
+
+        this.frameCount++;
 
         if (g instanceof Graphics2D) {
             Graphics2D g2d = (Graphics2D) g;
 
             g2d.drawImage(this.sprite.getImage(), (WIDTH / 2) - Sprite.WIDTH / 2, (HEIGHT / 2) - Sprite.HEIGHT / 2, this); 
             
-            // synchronized(particles) {
-            //     for (Particle p : particles) {
-            //         g2d.drawOval(p.getX(), p.getY(), Particle.DIAMETER, Particle.DIAMETER);
-            //     }
-            // }
-        }
+            synchronized (particles) {
+                // Check if there's frames to Paint
+                String frame = particles.poll();
 
-        this.frameCount++;
+                // If frame queue is empty, abort function
+                if (frame == null) return;
+
+                // Get the Particle Coordinates
+                String[] particles = frame.split(";");
+
+                // Paint the Coordinates
+                for (String p : particles) {
+                    String[] coord = p.split(",");
+                    System.out.println(coord[0] + "," + coord[1]);
+                    g2d.drawOval(Integer.parseInt(coord[0]), Integer.parseInt(coord[1]), DIAMETER, DIAMETER);
+                }
+            }
+        }
     }
 
     @Override
@@ -88,34 +137,85 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         repaint();
     }
 
+    /**
+     * All KeyListener Configurations below
+     */
+    private class CustomKeyListener extends KeyAdapter implements Modem {
+        private Socket socket;
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        char keyChar = e.getKeyChar();
-        int keyCode = e.getKeyCode();
+        public CustomKeyListener(Socket socket) {
+            this.socket = socket;
+        }
 
-        if (keyChar == 'w' || keyCode == KeyEvent.VK_UP ) {
-            this.sprite.setImage(Sprite.FORWARD);
-        } 
-        else if (keyChar == 'a' || keyCode == KeyEvent.VK_LEFT) {
-            this.sprite.setImage(Sprite.LEFTWARD);
+        @Override
+        public void keyPressed(KeyEvent e) {
+            char keyChar = e.getKeyChar();
+            int keyCode = e.getKeyCode();
+
+            if (keyChar == 'w' || keyCode == KeyEvent.VK_UP ) {
+                sprite.setImage(Sprite.FORWARD);
+                broadcast(socket, Sprite.FORWARD);
+            } 
+            else if (keyChar == 'a' || keyCode == KeyEvent.VK_LEFT) {
+                sprite.setImage(Sprite.LEFTWARD);
+                broadcast(socket, Sprite.LEFTWARD);
+            }
+            else if (keyChar == 's' || keyCode == KeyEvent.VK_DOWN) {
+                sprite.setImage(Sprite.BACKWARD);
+                broadcast(socket, Sprite.BACKWARD);
+            }
+            else if (keyChar == 'd' || keyCode == KeyEvent.VK_RIGHT) {
+                sprite.setImage(Sprite.RIGHTWARD);
+                broadcast(socket, Sprite.RIGHTWARD);
+            }
         }
-        else if (keyChar == 's' || keyCode == KeyEvent.VK_DOWN) {
-            this.sprite.setImage(Sprite.BACKWARD);
-        }
-        else if (keyChar == 'd' || keyCode == KeyEvent.VK_RIGHT) {
-            this.sprite.setImage(Sprite.RIGHTWARD);
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            sprite.pauseImage();
         }
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-        
-    }
+    /**
+     * Listen to every update of the Stream
+     */
+    private class StreamListener implements Runnable, Modem {
+        private Socket socket;
+        private boolean isConnected;
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        this.sprite.pauseImage();
+        public StreamListener(Socket socket) {
+            this.socket = socket;
+            this.isConnected = true;
+        }
+
+        public boolean isConnected() {
+            return this.isConnected;
+        }
+
+        @Override
+        public void run() {
+            try {
+                while (isConnected) {
+                    // Receive Stream Details
+                    String coord = receive(socket);
+
+                    // Abort if Null
+                    if (coord == null) {
+                        isConnected = false;
+                        continue;
+                    }
+
+                    synchronized (particles) {
+                        // Decide what to do from the Data
+                        this.isConnected = !coord.isEmpty() ? (particles.add(coord)) : false;
+                    }
+                }
+                sidePanel.setStatus(false);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 

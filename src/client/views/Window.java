@@ -2,17 +2,21 @@ package client.views;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
-
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.Socket;
 import java.util.concurrent.ExecutorService;
+
+import client.models.Modem;
 
 /**
  * The Window class is a JFrame that is used to display the simulation and control panels.
@@ -71,10 +75,10 @@ public class Window extends JFrame {
     /**
      * The Window constructor is used to create a new Window. This creates a Client immediately
      * @param executorService - Thread Executors
-     * @param ip - The IP Address of the Server
+     * @param socket - The Client socket
      * @param username - The unique identifier of the Player/Explorer
      */
-    public Window(ExecutorService executorService, String ip, String username) {
+    public Window(ExecutorService executorService, Socket socket, String username) {
         // Set the title of the window
         super(TITLE);
 
@@ -96,15 +100,20 @@ public class Window extends JFrame {
         // Set the window to be visible
         setVisible(true);
 
-        setContentPane(new ClientUI(ip, username));
+        setContentPane(new ClientUI(socket, username));
 
         // Close everything when X is clicked
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                super.windowClosed(e);
-                executorService.shutdownNow();
-                System.gc();
+                try {
+                    super.windowClosed(e);
+                    executorService.shutdownNow();
+                    System.gc();
+                }
+                catch (Exception err) {
+                    err.printStackTrace();
+                }
             }
         });
     }
@@ -113,17 +122,18 @@ public class Window extends JFrame {
      * The Main Client UI
      */
     private class ClientUI extends JSplitPane {
-        public ClientUI(String ip, String username) {
+        public ClientUI(Socket socket, String username) {
             // Create the a Split Pane with specific orientation and divider location
             setOrientation(JSplitPane.HORIZONTAL_SPLIT);
             setDividerLocation(Screen.WIDTH);
+            setResizable(false);
 
             // Create the Side Panel
-            SidePanel sidePanel = new SidePanel(ip, username);
+            SidePanel sidePanel = new SidePanel(socket.getLocalAddress().toString(), username);
             add(sidePanel, JSplitPane.RIGHT);
 
             // Create the Screen
-            add(new Screen(sidePanel), JSplitPane.LEFT);
+            add(new Screen(executorService, socket, sidePanel), JSplitPane.LEFT);
         }
     }
 
@@ -131,10 +141,16 @@ public class Window extends JFrame {
      * The Main Login UI
      */
     private class LoginUI extends Panel {
+        private final int PORT = 8080;
+
+        JLabel errorLabel;
+
         InputField ip, username;
 
         public LoginUI() {
             super(new BorderLayout());
+
+            this.errorLabel = addLabel("");
 
             add(new InputPanel(), BorderLayout.CENTER);
 
@@ -157,7 +173,7 @@ public class Window extends JFrame {
         /**
          * Below are the Button Configurations
          */
-        private class ButtonPanel extends Panel {
+        private class ButtonPanel extends Panel implements Modem {
             public ButtonPanel() {
                 super(new GridLayout(1, 1));
 
@@ -165,11 +181,24 @@ public class Window extends JFrame {
                 addButton("Login", new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // Find the parent window of the button and Dispose it
-                        SwingUtilities.windowForComponent((JButton) e.getSource()).dispose();
+                        try {
+                            // Connect to the Server
+                            Socket socket = new Socket(ip.getText(), PORT);
 
-                        // Create a New Client Window
-                        new Window(executorService, ip.getText(), username.getText());
+                            // Broadcast your Name
+                            String payload = username.getText() + ";" + 500 +";" + 700;
+                            broadcast(socket, payload);
+
+                            // Find the parent window of the button and Dispose it
+                            SwingUtilities.windowForComponent((JButton) e.getSource()).dispose();
+
+                            // Create a New Client Window
+                            new Window(executorService, socket, username.getText());
+                        }
+                        catch (Exception err) {
+                            errorLabel.setText("<html>IP Address not found.</html>");
+                            errorLabel.setForeground(Color.RED);
+                        }
                     }
                 });
             }
