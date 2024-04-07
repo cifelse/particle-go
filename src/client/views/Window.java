@@ -150,7 +150,7 @@ public class Window extends JFrame {
 
         public LoginUI() {
             super(new FlowLayout(FlowLayout.CENTER, 0, Window.HEIGHT / 3));
-
+            // The Floating Middle
             add(new LoginContainer());
         }
 
@@ -193,7 +193,7 @@ public class Window extends JFrame {
          */
         private class ButtonPanel extends Panel implements Modem {
             public ButtonPanel() {
-                super(new GridLayout(1, 1));
+                super(new FlowLayout(FlowLayout.CENTER));
 
                 // The Login Button
                 addButton("Login", new ActionListener() {
