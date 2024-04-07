@@ -112,7 +112,8 @@ public interface Modem {
             number = in.readInt();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            if (!(e instanceof EOFException) && !(e instanceof SocketException))
+                e.printStackTrace();
         }
         return number;
     }
