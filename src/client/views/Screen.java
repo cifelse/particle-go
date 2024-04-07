@@ -2,6 +2,7 @@ package client.views;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -21,8 +22,9 @@ import client.models.Modem;
  * The Main Panel that is used to display the simulation of the particles and players.
  */
 public class Screen extends JPanel implements ActionListener {
-    // Particle Config
+    // Element Config
     public final int DIAMETER = 500;
+    public final int FONT_SIZE = 20;
 
     // Screen Size
     public final static int WIDTH = 720;
@@ -39,8 +41,9 @@ public class Screen extends JPanel implements ActionListener {
     // Stream
     private StreamListener streamListener;
     
-    // The Sprite
+    // The Sprite and Username
     private Sprite sprite;
+    private String username;
 
     // Frames 
     private Queue<String> particles;
@@ -52,7 +55,7 @@ public class Screen extends JPanel implements ActionListener {
      * @param socket - Client Socket to listen
      * @param sidepanel - The SidePanel for the Ping and FPS
      */
-    public Screen(ExecutorService executorService, Socket socket, SidePanel sidepanel) {
+    public Screen(ExecutorService executorService, Socket socket, SidePanel sidepanel, String username) {
         // Focus on the Screen always
         setFocusable(true);
 
@@ -85,6 +88,7 @@ public class Screen extends JPanel implements ActionListener {
 
         // Initialize the Sprite
         this.sprite = new Sprite(Sprite.FORWARD);
+        this.username = username;
 
         this.particles = new LinkedList<String>();
         // this.players = new LinkedList<String>();
@@ -109,7 +113,12 @@ public class Screen extends JPanel implements ActionListener {
         if (g instanceof Graphics2D) {
             Graphics2D g2d = (Graphics2D) g;
 
-            g2d.drawImage(this.sprite.getImage(), (WIDTH / 2) - Sprite.WIDTH / 2, (HEIGHT / 2) - Sprite.HEIGHT / 2, this); 
+            // Draw the username above the sprite
+            g2d.setFont(new Font("Arial", Font.BOLD, FONT_SIZE));
+            g2d.drawString(username, (Screen.WIDTH - g2d.getFontMetrics().stringWidth(username)) / 2, (Screen.HEIGHT / 2) - Sprite.HEIGHT / 2 - g2d.getFont().getSize());
+            
+            // Draw the Image
+            g2d.drawImage(this.sprite.getImage(), (Screen.WIDTH / 2) - Sprite.WIDTH / 2, (Screen.HEIGHT / 2) - Sprite.HEIGHT / 2, this); 
             
             synchronized (particles) {
                 // Check if there's frames to Paint

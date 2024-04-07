@@ -134,7 +134,7 @@ public class Window extends JFrame {
             add(sidePanel, JSplitPane.RIGHT);
 
             // Create the Screen
-            add(new Screen(executorService, socket, sidePanel), JSplitPane.LEFT);
+            add(new Screen(executorService, socket, sidePanel, username), JSplitPane.LEFT);
         }
     }
 

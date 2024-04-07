@@ -9,8 +9,8 @@ import javax.imageio.ImageIO;
 
 public class Sprite {
     // Size of the Sprite in the Screen
-    public static final int WIDTH = 200;
-    public static final int HEIGHT = 200;
+    public static final int WIDTH = 150;
+    public static final int HEIGHT = 150;
 
     // Direction Constants
     public static final int FORWARD = 0;
