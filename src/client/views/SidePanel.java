@@ -1,6 +1,7 @@
 package client.views;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -21,6 +22,10 @@ public class SidePanel extends JPanel {
      */
     public SidePanel(String ip, String username) {
         this.fps = new FPS();
+
+        // Adjust size according to what's left of the Window from the Screen
+        setPreferredSize(new Dimension(Window.WIDTH - Screen.WIDTH, Screen.HEIGHT));
+        setMinimumSize(new Dimension(Window.WIDTH - Screen.WIDTH, Screen.HEIGHT));
 
         // Set the Layout of the panel
         setLayout(new BorderLayout());
@@ -55,7 +60,7 @@ public class SidePanel extends JPanel {
         public StatusPanel(String localhost, String username) {
             super("Welcome to Particle Go!", new BorderLayout());
 
-            String text = "<html><br>Connected at: <B>" + localhost + "</B><br><br>Hello, " + username + "! You are now connected to world of Particle Go!<br><br>Roam around using the <B>W A S D</B> keys or your arrow keys.</html>";
+            String text = "<html><br>Connected at: <B>" + localhost + "</B><br><br>Hello, <B>" + username + "</B>! You are now connected to world of Particle Go!<br><br>Roam around using the <B>W A S D</B> keys or your arrow keys.</html>";
 
             add(new JLabel(text), BorderLayout.NORTH);
         }

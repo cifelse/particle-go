@@ -1,11 +1,12 @@
 package client.views;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -124,9 +125,9 @@ public class Window extends JFrame {
     private class ClientUI extends JSplitPane {
         public ClientUI(Socket socket, String username) {
             // Create the a Split Pane with specific orientation and divider location
-            setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-            setDividerLocation(Screen.WIDTH);
-            setResizable(false);
+            this.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+            this.setDividerLocation(Screen.WIDTH);
+            this.setResizeWeight(0.0);
 
             // Create the Side Panel
             SidePanel sidePanel = new SidePanel(socket.getLocalAddress().toString(), username);
@@ -148,13 +149,30 @@ public class Window extends JFrame {
         InputField ip, username;
 
         public LoginUI() {
-            super(new BorderLayout());
+            super(new FlowLayout(FlowLayout.CENTER, 0, Window.HEIGHT / 3));
 
-            this.errorLabel = addLabel("");
+            add(new LoginContainer());
+        }
 
-            add(new InputPanel(), BorderLayout.CENTER);
+        private class LoginContainer extends JPanel {
+            public LoginContainer() {
+                setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-            add(new ButtonPanel(), BorderLayout.SOUTH);
+                // Add error label at the top
+                errorLabel = addLabel("");
+                errorLabel.setHorizontalAlignment(JLabel.CENTER); // Center the error label
+                add(errorLabel);
+        
+                // Add InputPanel in the center
+                InputPanel inputPanel = new InputPanel();
+                inputPanel.setAlignmentX(CENTER_ALIGNMENT); // Center the InputPanel
+                add(inputPanel);
+        
+                // Add ButtonPanel at the bottom
+                ButtonPanel buttonPanel = new ButtonPanel();
+                buttonPanel.setAlignmentX(CENTER_ALIGNMENT); // Center the ButtonPanel
+                add(buttonPanel);
+            }
         }
 
         /**
@@ -164,9 +182,9 @@ public class Window extends JFrame {
             public InputPanel() {
                 super(new GridLayout(2, 4, 0, 5));
 
-                ip = addInputBar("Enter IP Address");
+                ip = addInputBar("Enter IP Address", 20);
 
-                username = addInputBar("Enter Username");
+                username = addInputBar("Enter Username", 20);
             }
         }
 
