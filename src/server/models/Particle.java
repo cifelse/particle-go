@@ -1,7 +1,5 @@
 package models;
 
-import views.Screen;
-
 public class Particle {
     // The size of the Particle in the Screen
     public final static int DIAMETER = 5;
@@ -28,11 +26,8 @@ public class Particle {
      * @param angle - The angle of the Particle
      */
     public Particle(String spawnX, String spawnY, String speed, String angle) {
-        int tempX = Integer.parseInt(spawnX);
-        int tempY = 720 - Integer.parseInt(spawnY);
-
-        this.x = tempX != 0 ? (tempX == Screen.WIDTH ? tempX - DIAMETER : tempX) : tempX + DIAMETER;
-        this.y = tempY != 0 ? (tempY == Screen.HEIGHT ? tempY - DIAMETER : tempY) : tempY + DIAMETER;
+        this.x = Integer.parseInt(spawnX);
+        this.y = Integer.parseInt(spawnY);
 
         this.speed = Float.parseFloat(speed);
         this.angle = Float.parseFloat(angle) % 360;
@@ -50,8 +45,8 @@ public class Particle {
      * @param angle - The angle of the Particle
      */
     public Particle(int spawnX, int spawnY, float speed, float angle) {
-        this.x = spawnX != 0 ? (spawnX == Screen.WIDTH ? spawnX - DIAMETER : spawnX) : spawnX + DIAMETER;
-        this.y = 720 - (spawnY != 0 ? (spawnY == Screen.HEIGHT ? spawnY - DIAMETER : spawnY) : spawnY + DIAMETER);
+        this.x = spawnX;
+        this.y = spawnY;
         
         this.speed = speed;
         this.angle = angle % 360;

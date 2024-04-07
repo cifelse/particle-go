@@ -1,23 +1,30 @@
 package models;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Resources {
+public class Resources implements Serializable {
     private final CopyOnWriteArrayList<Particle> particles;
 
-    private final CopyOnWriteArrayList<Player> players;
+    private final Map<String, Player> players;
 
     public Resources() {
-        particles = new CopyOnWriteArrayList<Particle>();
-        players = new CopyOnWriteArrayList<Player>();
+        this.particles = new CopyOnWriteArrayList<Particle>();
+        this.players = new HashMap<String, Player>();
     }
 
     public CopyOnWriteArrayList<Particle> getParticles() {
         return this.particles;
     }
 
-    public CopyOnWriteArrayList<Player> getPlayers() {
+    public Map<String, Player> getPlayers() {
         return this.players;
+    }
+
+    public Player getPlayer(String username) {
+        return this.players.get(username);
     }
 
     public void clearParticles() {
@@ -30,10 +37,14 @@ public class Resources {
     }
 
     public void addPlayer(Player player) {
-        this.players.add(player);
+        this.players.put(player.getUsername(), player);
     }
 
     public void removePlayer(Player player) {
-        this.players.remove(player);
+        this.players.remove(player.getUsername());
+    }
+
+    public void removePlayer(String username) {
+        this.players.remove(username);
     }
 }

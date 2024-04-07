@@ -3,11 +3,14 @@ package models;
 import java.net.Socket;
 
 public class Player {
-    // X Coordinate
-    private int x;
+    // Direction Constants
+    public static final int FORWARD = 0;
+    public static final int BACKWARD = 1;
+    public static final int LEFTWARD = 2;
+    public static final int RIGHTWARD = 3;
 
-    // Y Coordinate
-    private int y;
+    // Coordinate
+    private int x, y;
 
     // Unique Identifier
     private String username;
@@ -15,7 +18,14 @@ public class Player {
     // Client Socket
     private Socket socket;
 
-    public Player(int x, int y, String username, Socket socket) {
+    public Player(String username, String x, String y, Socket socket) {
+        this.x = Integer.parseInt(x);
+        this.y = Integer.parseInt(y);
+        this.username = username;
+        this.socket = socket;
+    }
+
+    public Player(String username, int x, int y, Socket socket) {
         this.x = x;
         this.y = y;
         this.username = username;
@@ -46,5 +56,27 @@ public class Player {
     public void setCoordinate(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void setCoordinate(String x, String y) {
+        this.x = Integer.parseInt(x);
+        this.y = Integer.parseInt(y);
+    }
+
+    public void move(int direction) {
+        switch (direction) {
+            case FORWARD:
+                this.y++;
+                break;
+            case BACKWARD:
+                this.y--;
+                break;
+            case LEFTWARD:
+                this.x--;
+                break;
+            case RIGHTWARD:
+                this.x++;
+                break;
+        }
     }
 }

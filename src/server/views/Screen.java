@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 
@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import models.Particle;
+import models.Player;
 import models.Resources;
 
 /**
@@ -31,13 +32,17 @@ public class Screen extends JPanel implements ActionListener  {
     // Particles
     private CopyOnWriteArrayList<Particle> particles;
 
+    // Players
+    private Map<String, Player> players;
+
     // Frames and Timers
     private int frameCount;
     private Timer timer, fps;
 
     public Screen(ExecutorService executor, Resources resources, SidePanel controlPanel) {
-        // Set The Walls and Particles
+        // Set the Particles and Players
         this.particles = resources.getParticles();
+        this.players = resources.getPlayers();
 
         // Set the Executor
         this.executor = executor;
@@ -73,11 +78,28 @@ public class Screen extends JPanel implements ActionListener  {
 
         if (g instanceof Graphics2D) {
             Graphics2D g2d = (Graphics2D) g;
-            g2d.setColor(Color.WHITE);
-            
-            synchronized(particles) {
+
+            int rad = (int) Math.floor(Particle.DIAMETER / 2) ;
+
+            synchronized (particles) {
+                g2d.setColor(Color.WHITE);
+
                 for (Particle p : particles) {
-                    g2d.drawOval(p.getX(), p.getY(), Particle.DIAMETER, Particle.DIAMETER);
+                    int x = p.getX() <= rad ? rad : (p.getX() >= Screen.WIDTH ? p.getX() - rad : p.getX());
+                    int y = p.getY() <= rad ? rad : (p.getY() >= Screen.HEIGHT ? p.getY() - rad : p.getY());
+
+                    g2d.drawOval(x, Screen.HEIGHT - y, Particle.DIAMETER, Particle.DIAMETER);
+                }
+            }
+
+            synchronized (players) {
+                g2d.setColor(Color.RED);
+
+                for (Player player : players.values()) {
+                    int x = player.getX() <= rad ? rad : (player.getX() >= Screen.WIDTH ? player.getX() - rad : player.getX());
+                    int y = player.getY() <= rad ? rad : (player.getY() >= Screen.HEIGHT ? player.getY() - rad : player.getY());
+
+                    g2d.drawOval(x, Screen.HEIGHT - y, Particle.DIAMETER, Particle.DIAMETER);
                 }
             }
         }
