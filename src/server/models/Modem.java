@@ -45,11 +45,8 @@ public interface Modem {
             out.write(bytes);
             out.flush();
         }
-        catch (SocketException se) {
-            return false;
-        }
         catch (Exception e) {
-            e.printStackTrace();
+            if (!(e instanceof SocketException)) e.printStackTrace();
             return false;
         }
         return true;
@@ -89,11 +86,8 @@ public interface Modem {
             in.readFully(bytes); // Read the bytes into the byte array
             message = new String(bytes, StandardCharsets.UTF_8);
         }
-        catch (EOFException eof) {
-            return null;
-        }
         catch (Exception e) {
-            e.printStackTrace();
+            if (!(e instanceof EOFException)) e.printStackTrace();
             return null;
         }
         return message;
@@ -112,7 +106,7 @@ public interface Modem {
             number = in.readInt();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            if (!(e instanceof EOFException)) e.printStackTrace();
         }
         return number;
     }

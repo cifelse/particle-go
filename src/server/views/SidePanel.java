@@ -1,7 +1,7 @@
 package views;
 
 import java.awt.BorderLayout;
-
+import java.awt.Dimension;
 import java.util.concurrent.ExecutorService;
 
 import javax.swing.JLabel;
@@ -27,6 +27,10 @@ public class SidePanel extends JPanel {
         // Set the Layout of the panel
         setLayout(new BorderLayout());
 
+        // Adjust size according to what's left of the Window from the Screen
+        setPreferredSize(new Dimension(Window.WIDTH - Screen.WIDTH, Screen.HEIGHT));
+        setMinimumSize(new Dimension(Window.WIDTH - Screen.WIDTH, Screen.HEIGHT));
+        
         // Add the FPS Panel
         add(fps, BorderLayout.NORTH);
 
