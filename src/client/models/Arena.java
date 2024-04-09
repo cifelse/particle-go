@@ -1,9 +1,16 @@
 package client.models;
 
 public class Arena {
+    // For Edge detection
+    public static final int SAFE = -1;
+    public static final int TOP = 0;
+    public static final int RIGHT = 1;
+    public static final int BOTTOM = 2;
+    public static final int LEFT = 3;
+
     // Arena Size
     private int width, height;
-
+    // The main player
     private Player player;
 
     /**
@@ -49,8 +56,18 @@ public class Arena {
      * Check if the Player is at the edge of the Arena.
      * @return true if the Player is at the edge, false otherwise
      */
-    public boolean isEdge() {
-        return player == null ? null : (player.getX() == 0 || player.getX() == width - 1 || player.getY() == 0 || player.getY() == height - 1);
+    public boolean isEdge(int futureMove) {
+        switch (futureMove) {
+            case Player.FORWARD:
+                return this.getPlayer().getY() + 1 >= this.height;
+            case Player.BACKWARD:
+                return this.getPlayer().getY() - 1 < 0;
+            case Player.LEFTWARD:
+                return this.getPlayer().getX() - 1 < 0;
+            case Player.RIGHTWARD:
+            default:
+                return this.getPlayer().getX() + 1 >= this.width;
+        }
     }
 }
 

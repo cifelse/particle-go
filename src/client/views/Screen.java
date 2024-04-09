@@ -91,16 +91,21 @@ public class Screen extends JPanel implements ActionListener, Modem {
         });
         this.fps.start();
 
-        // Initialize the Player to Display
-        this.player = new Player(username);
-
         // Frames to be Rendered
         this.particleFrames = new Frames();
         this.playerFrames = new Frames();
 
-        // Get the Map Size and Set the Arena
+        // Get the Map Size 
         String[] mapSize = receive(socket).split(Protocol.SEPARATOR);
-        this.arena = new Arena(mapSize[0], mapSize[1], this.player);
+
+        int mapWidth = Integer.parseInt(mapSize[0]);
+        int mapHeight = Integer.parseInt(mapSize[1]);
+
+        // Initialize the Player to Display
+        this.player = new Player(username, mapWidth, mapHeight);
+
+        // Set the Arena
+        this.arena = new Arena(mapWidth, mapHeight, this.player);
 
         // Add Custom KeyListener for tracking the Player Movements
         addKeyListener(new CustomKeyListener(socket));
@@ -180,26 +185,26 @@ public class Screen extends JPanel implements ActionListener, Modem {
                 }
             }
 
-            // if (this.explorer.getCenter_x() - 16 < 0) {
-            //     g2d.fillRect(0, 0, Math.abs(this.explorer.getCenter_x() - 16)*width_ratio, HEIGHT);
-            // }
+            /**
+             * Draw the Border of the Screen if the Player is near the edge of the map
+             */
 
-            // if (this.explorer.getCenter_x() + 16 > WIDTH) {
-            //     int overflow = this.explorer.getCenter_x() + 16;
-            //     int width = (overflow -WIDTH) * width_ratio;
-            //     g2d.fillRect(WIDTH- (width), 0, width, HEIGHT);
+            // LEFT
+            if (player.getX() <= WIDTH_RATIO * 2)
+                g2d.fillRect(0, 0, (Screen.WIDTH / 2) - (Sprite.WIDTH / 2) + WIDTH_RATIO * 2 - (player.getX() * WIDTH_RATIO / 2), Screen.HEIGHT);
                 
-            // }
+            // RIGHT
+            if (player.getX() + (WIDTH_RATIO * 2) >= arena.getWidth())
+                g2d.fillRect((Screen.WIDTH / 2 + WIDTH_RATIO) + ((arena.getWidth() - player.getX()) * WIDTH_RATIO / 2), 0, Screen.WIDTH, Screen.HEIGHT);
 
-            // if (this.explorer.getCenter_y() - 9 < 0){
-            //     g2d.fillRect(0, 0, WIDTH, Math.abs(this.explorer.getCenter_y() - 9)*height_ratio);
-            // }
+            // BOTTOM
+            if (player.getY() <= HEIGHT_RATIO * 2)
+                g2d.fillRect(0, (Screen.HEIGHT / 2) + (Sprite.HEIGHT / 3) + (player.getY() * HEIGHT_RATIO / 2), Screen.WIDTH, (Screen.HEIGHT / 2) - (Sprite.HEIGHT / 2) + HEIGHT_RATIO * 2);
 
-            // if (this.explorer.getCenter_y() + 9 >  HEIGHT) {
-            //     int overflow = this.explorer.getCenter_y() + 9;
-            //     int height = (overflow - HEIGHT) * height_ratio;
-            //     g2d.fillRect(0, HEIGHT - height, WIDTH, height);
-            // }
+            // TOP
+            if (player.getY() + (HEIGHT_RATIO * 2) >= arena.getHeight())
+                g2d.fillRect(0, 0 - ((arena.getHeight() - player.getY()) * HEIGHT_RATIO / 2), Screen.WIDTH, (Screen.HEIGHT / 2) - (Sprite.HEIGHT / 2) + HEIGHT_RATIO * 2);
+            
         }
     }
 
@@ -223,25 +228,37 @@ public class Screen extends JPanel implements ActionListener, Modem {
         public void keyPressed(KeyEvent e) {
             char keyChar = e.getKeyChar();
             int keyCode = e.getKeyCode();
-
+            
             /**
              * When moving, broadcast it first to the server then
              * move locally to avoid delay in movement.
              */
 
             if (keyChar == 'w' || keyCode == KeyEvent.VK_UP ) {
+                // Do not move if the player is at the edge of the map
+                if (arena.isEdge(Player.FORWARD)) return;
+
                 broadcast(socket, Sprite.FORWARD);
                 player.move(Player.FORWARD);
             } 
             else if (keyChar == 'a' || keyCode == KeyEvent.VK_LEFT) {
+                // Do not move if the player is at the edge of the map
+                if (arena.isEdge(Player.LEFTWARD)) return;
+
                 broadcast(socket, Sprite.LEFTWARD);
                 player.move(Player.LEFTWARD);
             }
             else if (keyChar == 's' || keyCode == KeyEvent.VK_DOWN) {
+                // Do not move if the player is at the edge of the map
+                if (arena.isEdge(Player.BACKWARD)) return;
+
                 broadcast(socket, Sprite.BACKWARD);
                 player.move(Player.BACKWARD);
             }
             else if (keyChar == 'd' || keyCode == KeyEvent.VK_RIGHT) {
+                // Do not move if the player is at the edge of the map
+                if (arena.isEdge(Player.RIGHTWARD)) return;
+
                 broadcast(socket, Sprite.RIGHTWARD);
                 player.move(Player.RIGHTWARD);
             }
