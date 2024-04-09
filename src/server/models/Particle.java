@@ -74,7 +74,7 @@ public class Particle {
 
     public void refreshXY(){
         this.x = Math.round(this.x + this.velX);
-        this.y = Math.round(this.y - this.velY);
+        this.y = Math.round(this.y + this.velY);
     }
 
     public int getX() {
