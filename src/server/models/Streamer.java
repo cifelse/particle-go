@@ -2,7 +2,10 @@ package models;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
+
+import views.Screen;
 
 public class Streamer implements Modem {
     // Port for Watching the Stream
@@ -53,13 +56,28 @@ public class Streamer implements Modem {
                         boolean hasError = false;
 
                         if (!socket.isClosed()) {
-                            String payload = "";
+                            // SEND ALL OF THE PARTICLES
+                            String payload = Protocol.PARTICLE;
+
                             for (Particle particle : resources.getParticles()) {
-                                payload += particle.getX() + "," + particle.getY() + (resources.getParticles().size() > 1 ? ";" : "");
+                                payload += particle.getX() + Protocol.SEPARATOR + particle.getY() + Protocol.EOF;
                             }
-                            if (!payload.isEmpty()) hasError = !(broadcast(socket, payload));
+
+                            if (payload != Protocol.PARTICLE) {
+                                hasError = !(broadcast(socket, payload));
+                            }
+
+                            // SEND ALL OF THE PLAYERS
+                            payload = Protocol.PLAYER;
+                            
+                            Map<String, Player> otherPlayers = resources.getOtherPlayers(player.getUsername());
+
+                            for (Player pl : otherPlayers.values()) {
+                                payload += pl.getLocation();
+                            }
+
+                            if (payload != Protocol.PLAYER) hasError = !(broadcast(socket, payload));
                         }
-                        else hasError = true;
 
                         if (hasError) {
                             resources.removePlayer(player);
@@ -92,12 +110,15 @@ public class Streamer implements Modem {
                 
                 // Handle the Adding in another Thread
                 executorService.submit(new Thread(() -> {
+                    // Send the Map Specs
+                    broadcast(socket, Screen.WIDTH + Protocol.SEPARATOR + Screen.HEIGHT);
+
                     String raw = receive(socket);
 
                     if (raw.isEmpty()) return;
 
-                    // USERNAME ; X ; Y
-                    String[] config = raw.split(";");
+                    // Each login you will receive: USERNAME,X,Y
+                    String[] config = raw.split(Protocol.EOF)[0].split(Protocol.SEPARATOR);
 
                     console.log((config[0] + " (" + socket.getInetAddress() + ") has joined the lobby at " + config[1] + ", " + config[2] + "."));
 
@@ -132,11 +153,15 @@ public class Streamer implements Modem {
             while (true) try {
                 int request = receiveInt(clientSocket);
 
-                if (request == -1) clientSocket.close();
+                if (request == Protocol.DISCONNECT) {
+                    clientSocket.close();
+                    resources.removePlayer(username);
+                    break;
+                }
 
+                // Move the Player
                 synchronized (resources) {
-                    Player player = resources.getPlayer(username);
-                    player.move(request);
+                    resources.getPlayer(username).move(request);
                 }
             }
             catch (Exception e) {

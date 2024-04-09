@@ -265,7 +265,6 @@ public class AddParticlePanel extends Panel {
                                                         for (int i = count; i > 0; i--) {
                                                             synchronized(resources) {
                                                                 resources.addParticle(new Particle(finalX, finalY, finalSpeed, currentAngle));
-                                                                System.out.println(currentAngle);
                                                                 currentAngle += diff;
                                                                 Thread.sleep(INTERVAL);
                                                             }

@@ -40,6 +40,12 @@ public class Resources implements Serializable {
         this.players.put(player.getUsername(), player);
     }
 
+    public Map<String, Player> getOtherPlayers(String username) {
+        Map<String, Player> otherPlayers = new HashMap<>(players);
+        otherPlayers.remove(username);
+        return otherPlayers;
+    }
+
     public void removePlayer(Player player) {
         this.players.remove(player.getUsername());
     }

@@ -12,6 +12,9 @@ public class Player {
     // Coordinate
     private int x, y;
 
+    // Direction
+    private int direction;
+
     // Unique Identifier
     private String username;
 
@@ -23,6 +26,7 @@ public class Player {
         this.y = Integer.parseInt(y);
         this.username = username;
         this.socket = socket;
+        this.direction = FORWARD;
     }
 
     public Player(String username, int x, int y, Socket socket) {
@@ -30,6 +34,7 @@ public class Player {
         this.y = y;
         this.username = username;
         this.socket = socket;
+        this.direction = FORWARD;
     }
 
     public int getX() {
@@ -38,6 +43,14 @@ public class Player {
 
     public int getY() {
         return this.y;
+    }
+
+    public String getLocation() {
+        return this.username + Protocol.SEPARATOR + this.x + Protocol.SEPARATOR + this.y + Protocol.EOF;
+    }
+
+    public int getDirection() {
+        return this.direction;
     }
 
     public String getUsername() {
@@ -64,6 +77,7 @@ public class Player {
     }
 
     public void move(int direction) {
+        this.direction = direction;
         switch (direction) {
             case FORWARD:
                 this.y++;
