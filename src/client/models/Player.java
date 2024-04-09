@@ -39,9 +39,9 @@ public class Player {
         this.sprite = new Sprite();
     }
 
-    public Player(String username) {
-        this.x = 500;
-        this.y = 500;
+    public Player(String username, int mapWidth, int mapHeight) {
+        this.x = (int) (Math.random() * mapWidth) + 1;;
+        this.y = (int) (Math.random() * mapHeight) + 1;;
         this.username = username;
         this.sprite = new Sprite();
     }
