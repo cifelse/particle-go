@@ -19,7 +19,7 @@ public class Sprite {
     public static final int RIGHTWARD = 3;
 
     // Image Paths
-    private static final String[] FRONT_PATHS = {
+    public static final String[] FRONT_PATHS = {
             "images/f1.png",
             "images/f2.png",
             "images/f3.png",
@@ -31,7 +31,7 @@ public class Sprite {
             "images/f9.png"
     };
 
-    private static final String[] BACK_PATHS = {
+    public static final String[] BACK_PATHS = {
         "images/b1.png",
         "images/b2.png",
         "images/b3.png",
@@ -43,7 +43,7 @@ public class Sprite {
         "images/b9.png"
     };
 
-    private static final String[] LEFT_PATHS = {
+    public static final String[] LEFT_PATHS = {
         "images/l1.png",
         "images/l2.png",
         "images/l3.png",
@@ -55,7 +55,7 @@ public class Sprite {
         "images/l9.png"
     };
 
-    private static final String[] RIGHT_PATHS = {
+    public static final String[] RIGHT_PATHS = {
         "images/r1.png",
         "images/r2.png",
         "images/r3.png",
