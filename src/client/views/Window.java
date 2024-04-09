@@ -17,8 +17,6 @@ import java.awt.event.WindowEvent;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
-import client.models.Modem;
-
 /**
  * The Window class is a JFrame that is used to display the simulation and control panels.
  */
@@ -109,6 +107,13 @@ public class Window extends JFrame {
             public void windowClosed(WindowEvent e) {
                 try {
                     super.windowClosed(e);
+
+                    if (!socket.isClosed()) {
+                        socket.getOutputStream().write(-1);
+                        socket.getOutputStream().flush();
+                        socket.close();
+                    }
+
                     executorService.shutdownNow();
                     System.gc();
                 }
@@ -146,7 +151,7 @@ public class Window extends JFrame {
 
         JLabel errorLabel;
 
-        InputField ip, username;
+        InputField ipField, usernameField;
 
         public LoginUI() {
             super(new FlowLayout(FlowLayout.CENTER, 0, Window.HEIGHT / 3));
@@ -182,16 +187,16 @@ public class Window extends JFrame {
             public InputPanel() {
                 super(new GridLayout(2, 4, 0, 5));
 
-                ip = addInputBar("Enter IP Address", 20);
+                ipField = addInputBar("Enter IP Address", 20);
 
-                username = addInputBar("Enter Username", 20);
+                usernameField = addInputBar("Enter Username", 20);
             }
         }
 
         /**
          * Below are the Button Configurations
          */
-        private class ButtonPanel extends Panel implements Modem {
+        private class ButtonPanel extends Panel {
             public ButtonPanel() {
                 super(new FlowLayout(FlowLayout.CENTER));
 
@@ -201,17 +206,13 @@ public class Window extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         try {
                             // Connect to the Server
-                            Socket socket = new Socket(ip.getText(), PORT);
-
-                            // Broadcast your Name
-                            String payload = username.getText() + ";" + 500 +";" + 700;
-                            broadcast(socket, payload);
+                            Socket socket = new Socket(ipField.getText(), PORT);
 
                             // Find the parent window of the button and Dispose it
                             SwingUtilities.windowForComponent((JButton) e.getSource()).dispose();
 
                             // Create a New Client Window
-                            new Window(executorService, socket, username.getText());
+                            new Window(executorService, socket, usernameField.getText());
                         }
                         catch (Exception err) {
                             errorLabel.setText("<html>IP Address not found.</html>");

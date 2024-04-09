@@ -29,12 +29,21 @@ public class Player {
         this.x = x;
         this.y = y;
         this.username = "Traveller";
+        this.sprite = new Sprite();
     }
 
     public Player(String x, String y) {
         this.x = Integer.parseInt(x);
         this.y = Integer.parseInt(y);
         this.username = "Traveller";
+        this.sprite = new Sprite();
+    }
+
+    public Player(String username) {
+        this.x = 500;
+        this.y = 500;
+        this.username = username;
+        this.sprite = new Sprite();
     }
 
     /**
@@ -47,12 +56,14 @@ public class Player {
         this.x = x;
         this.y = y;
         this.username = username;
+        this.sprite = new Sprite();
     }
 
     public Player(String x, String y, String username) {
         this.x = Integer.parseInt(x);
         this.y = Integer.parseInt(y);
         this.username = username;
+        this.sprite = new Sprite();
     }
 
     public int getX() {
@@ -69,6 +80,10 @@ public class Player {
 
     public Image getImage() {
         return this.sprite.getImage();
+    }
+
+    public String getLocation() {
+        return this.username + Protocol.SEPARATOR + this.x + Protocol.SEPARATOR + this.y + Protocol.EOF;
     }
 
     /**

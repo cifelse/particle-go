@@ -37,13 +37,13 @@ public class Frames extends LinkedList<client.models.Frames.Frame> {
      * @return - whether the frame was added
      */
     public boolean addPlayerFrame(String rawFrame) {
-        String[] players = rawFrame.split(";");
+        String[] players = rawFrame.split(Protocol.EOF);
         Frame frame = new Frame(FrameType.PLAYER);
 
-        // FORMAT: X,Y,DIRECTION
+        // FORMAT: USERNAME,X,Y,DIRECTION
         for (int i = 0; i < players.length; i++) {
-            String[] parts = players[i].split(",");
-            frame.getElements().add(new Element(parts[0], parts[1], parts[2], this.size()));
+            String[] parts = players[i].split(Protocol.SEPARATOR);
+            frame.getElements().add(new Element(parts[0], parts[1], parts[2], parts[3], this.size()));
         }
 
         return this.add(frame);
@@ -102,29 +102,11 @@ public class Frames extends LinkedList<client.models.Frames.Frame> {
         private int x, y, direction, index;
         private String name;
 
-        public Element(int x, int y) {
-            this.x = x;
-            this.y = y;
-            this.direction = -1;
-            this.index = -1;
-            this.name = null;
-        }
-
-        public Element(int x, int y, int direction, int index) {
-            this.x = x;
-            this.y = y;
-            this.direction = direction;
-            this.index = index;
-        }
-
-        public Element(int x, int y, int direction, int index, String name) {
-            this.x = x;
-            this.y = y;
-            this.direction = direction;
-            this.index = index;
-            this.name = name;
-        }
-
+        /**
+         * Create a new Element. This specific constructor is used for particles.
+         * @param x - the x coordinate
+         * @param y - the y coordinate
+         */
         public Element(String x, String y) {
             this.x = Integer.parseInt(x);
             this.y = Integer.parseInt(y);
@@ -133,20 +115,20 @@ public class Frames extends LinkedList<client.models.Frames.Frame> {
             this.name = null;
         }
 
-        public Element(String x, String y, String direction, int index) {
-            this.x = Integer.parseInt(x);
-            this.y = Integer.parseInt(y);
-            this.direction = Integer.parseInt(direction);
-            this.index = index;
-            this.name = null;
-        }
-
-        public Element(String x, String y, String direction, int index, String name) {
-            this.x = Integer.parseInt(x);
-            this.y = Integer.parseInt(y);
-            this.direction = Integer.parseInt(direction);
-            this.index = index;
+        /**
+         * Create a new Element. This specific constructor is used for players.
+         * @param username - the name of the player
+         * @param x - the x coordinate
+         * @param y - the y coordinate
+         * @param direction - the direction the player is facing
+         * @param index - the index of the player
+         */
+        public Element(String name, String x, String y, String direction, int index) {
             this.name = name;
+            this.x = Integer.parseInt(x);
+            this.y = Integer.parseInt(y);
+            this.direction = Integer.parseInt(direction);
+            this.index = index;
         }
 
         public int getX() {
