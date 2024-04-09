@@ -153,19 +153,19 @@ public class Frames extends LinkedList<client.models.Frames.Frame> {
 
         public Image getImage() {
             try {
-                switch (direction) {
+                switch (this.direction) {
                     case Sprite.LEFTWARD:
-                        return (Image) ImageIO.read(getClass().getResource(Sprite.LEFT_PATHS[index]));
+                        return (Image) ImageIO.read(getClass().getResource(Sprite.LEFT_PATHS[index % Sprite.LEFT_PATHS.length]));
                         
                     case Sprite.BACKWARD:
-                        return (Image) ImageIO.read(getClass().getResource(Sprite.BACK_PATHS[index]));
+                        return (Image) ImageIO.read(getClass().getResource(Sprite.BACK_PATHS[index % Sprite.BACK_PATHS.length]));
                         
                     case Sprite.RIGHTWARD:
-                        return (Image) ImageIO.read(getClass().getResource(Sprite.RIGHT_PATHS[index]));
+                        return (Image) ImageIO.read(getClass().getResource(Sprite.RIGHT_PATHS[index % Sprite.RIGHT_PATHS.length]));
                         
                     case Sprite.FORWARD:
                     default:
-                        return (Image) ImageIO.read(getClass().getResource(Sprite.FRONT_PATHS[index]));
+                        return (Image) ImageIO.read(getClass().getResource(Sprite.FRONT_PATHS[index % Sprite.FRONT_PATHS.length]));
                 }
             }
             catch (Exception e) {

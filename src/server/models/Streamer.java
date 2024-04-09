@@ -2,6 +2,7 @@ package models;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ConcurrentModificationException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -87,7 +88,7 @@ public class Streamer implements Modem {
                 }
             }
             catch (Exception e) {
-                e.printStackTrace();
+                if (!(e instanceof ConcurrentModificationException)) e.printStackTrace();
             }
         }
     }

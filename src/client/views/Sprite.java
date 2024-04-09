@@ -127,6 +127,36 @@ public class Sprite {
         return this.currentImages[currentImageIndex].getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
     }
 
+    public Image getSpecificImage(int direction, int index) {
+        String resource = "";
+
+        switch (direction) {
+            case FORWARD:
+                resource = FRONT_PATHS[index % FRONT_PATHS.length];
+                break;
+            case LEFTWARD:
+                resource = LEFT_PATHS[index % LEFT_PATHS.length];
+                break;
+            case RIGHTWARD:
+                resource = RIGHT_PATHS[index % RIGHT_PATHS.length];
+                break;
+            case BACKWARD:
+            default:
+                resource = BACK_PATHS[index % BACK_PATHS.length];
+        }
+        
+        Image img = null;
+
+        try {
+            img = ImageIO.read(getClass().getResource(resource));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return img == null ? img : img.getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
+    }
+
     public Image pauseImage() {
         this.stand = true;
         return this.currentImages[0].getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);

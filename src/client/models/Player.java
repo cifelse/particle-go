@@ -78,6 +78,10 @@ public class Player {
         return this.username;
     }
 
+    public Sprite getSprite() {
+        return this.sprite;
+    }
+
     public Image getImage() {
         return this.sprite.getImage();
     }

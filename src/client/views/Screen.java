@@ -162,7 +162,7 @@ public class Screen extends JPanel implements ActionListener, Modem {
 
                 // If frame queue is empty, skip this function
                 if (frame != null) {
-                    int rad = (int) Math.floor((DIAMETER - 100) / 2);
+                    int rad = (int) Math.ceil(Sprite.HEIGHT / 2);
                     
                     // Paint the Player Coordinates
                     for (Element p : frame.getElements()) {
@@ -171,9 +171,10 @@ public class Screen extends JPanel implements ActionListener, Modem {
 
                         // Only Render if within the Screen
                         if (x >= 0 && x <= Screen.WIDTH && y >= 0 && y <= Screen.HEIGHT) {
-                            // g2d.drawImage(p.getImage(), x, y, this);
-                            g2d.drawString(p.getName(), (x - g2d.getFontMetrics().stringWidth(p.getName())), y + FONT_SIZE);
-                            g2d.drawRect(x, y, DIAMETER - 100, DIAMETER - 100);
+                            // Draw the other players names as labels above the sprites
+                            g2d.drawString(p.getName(), x + FONT_SIZE, y - FONT_SIZE);
+                            // Draw the Sprite
+                            g2d.drawImage(player.getSprite().getSpecificImage(p.getDirection(), p.getIndex()), x, y, this);
                         }
                     }
                 }

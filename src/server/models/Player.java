@@ -46,7 +46,10 @@ public class Player {
     }
 
     public String getLocation() {
-        return this.username + Protocol.SEPARATOR + this.x + Protocol.SEPARATOR + this.y + Protocol.EOF;
+        return this.username + Protocol.SEPARATOR + 
+                this.x + Protocol.SEPARATOR + 
+                this.y + Protocol.SEPARATOR +
+                this.direction + Protocol.EOF;
     }
 
     public int getDirection() {
